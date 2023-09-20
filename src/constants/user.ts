@@ -1,0 +1,7 @@
+export const MAX_LENGTH_PASSWORD_ACCEPT = 12;
+export const MIN_LENGTH_PASSWORD_ACCEPT = 6;
+
+export const MAX_LENGTH_EMAIL_ACCEPT = 50;
+
+export const MAX_LENGTH_NAME_ACCEPT = 32;
+export const MIN_LENGTH_NAME_ACCEPT = 12;

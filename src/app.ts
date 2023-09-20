@@ -2,8 +2,8 @@ import express, { Express, NextFunction, Request, Response } from "express";
 import cors, { CorsOptions } from "cors";
 import configs from "./configs";
 import routers from "./routers";
-import ResponseError from "./utils/error.api";
-import HttpStatusCode from "./enums/http.status.code";
+import ResponseError from "./utils/error-api";
+import HttpStatusCode from "./enums/http-status-code";
 
 const app: Express = express();
 
