@@ -6,7 +6,8 @@
     "scripts": {
         "build": "npx tsc",
         "start": "node dist/server.js",
-        "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/server.js\""
+        "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/server.js\"",
+        "seeder-roles": "node dist/seeders/index.js"
     },
     "keywords": [],
     "author": "Phan Hoai Bao",
