@@ -30,6 +30,10 @@ export const MSG_REQUEST_RESET_PASS_SUCCESS =
 export const MSG_RESET_PASSWORD_SUCCESS = "Khôi phục mật khẩu thành công.";
 
 // Profile controller messages
+export const MSG_ERROR_GET_PROFILE_FAILED = "Không lấy được thông tin người dùng.";
+
 export const MSG_UPDATE_PROFILE_SUCCESS = "Cập nhật thông tin tài khoản thành công.";
 
 export const MSG_UPDATE_AVATAR_SUCCESS = "Cập nhật ảnh đại diện thành công.";
+
+export const MSG_ADD_ADDRESS_SUCCESS = "Thêm địa chỉ thành công.";
