@@ -96,6 +96,7 @@ const userSchema = new Schema<IUser, IUserMethods, TUserModel>(
             type: Boolean,
             default: true,
         },
+        favorites: [{ type: Schema.Types.ObjectId, ref: "Product" }],
     },
     { timestamps: true }
 );
