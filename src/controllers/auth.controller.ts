@@ -32,7 +32,8 @@ import {
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, password, name, phone } = req.body as IRegisterUser;
+        const { email, password, name, phone, gender, birthday } =
+            req.body as IRegisterUser;
 
         // find role user and using for default role
         const role = await RoleModel.findOne({ name: ERole.user });
@@ -47,6 +48,8 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             phone: phone,
             role: role._id,
             name: name,
+            gender: gender,
+            birthday: birthday,
         });
 
         return res.json({
