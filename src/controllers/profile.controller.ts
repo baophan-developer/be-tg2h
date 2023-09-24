@@ -97,7 +97,7 @@ export const updateAvatar = async (req: Request, res: Response, next: NextFuncti
 
 export const addAddressUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { provinceId, districtId, wardId, address } = req.body as IAdress;
+        const { provinceId, districtId, wardId, address, street } = req.body as IAdress;
         const { userId } = decodeToken(req);
 
         const addressSave = await AddressModel.create({
@@ -105,6 +105,7 @@ export const addAddressUser = async (req: Request, res: Response, next: NextFunc
             districtId: districtId,
             wardId: wardId,
             address: address,
+            street: street,
         });
 
         await UserModel.findByIdAndUpdate(
