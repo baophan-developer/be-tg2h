@@ -3,6 +3,8 @@ export interface IRegisterUser {
     password: string;
     name: string;
     phone: string;
+    gender: boolean;
+    birthday: Date;
 }
 
 export interface ILogin {
