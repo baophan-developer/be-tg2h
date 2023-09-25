@@ -9,10 +9,12 @@ import ProductModel from "../models/Product";
 import {
     MSG_ADD_ADDRESS_SUCCESS,
     MSG_ERROR_GET_PROFILE_FAILED,
+    MSG_REMOVE_ADDRESS_SUCCESS,
     MSG_UPDATE_AVATAR_SUCCESS,
     MSG_UPDATE_PROFILE_SUCCESS,
 } from "../constants/messages";
 import { uploadHandler } from "../configs/upload.config";
+import mongoose, { Schema } from "mongoose";
 
 export const getProfile = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -24,7 +26,7 @@ export const getProfile = async (req: Request, res: Response, next: NextFunction
             userId,
             "-_id -__v -password -refreshToken -createdAt -updatedAt -role"
         )
-            .populate("address", "-_id -__v")
+            .populate("address", "-__v")
             .populate("favorites")
             .exec();
 
@@ -120,11 +122,63 @@ export const addAddressUser = async (req: Request, res: Response, next: NextFunc
     }
 };
 
+interface IUpdateAddress extends IAdress {
+    id: Schema.Types.ObjectId;
+}
+
+export const editAddressUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { id, provinceId, districtId, wardId, address, street } =
+            req.body as IUpdateAddress;
+
+        await AddressModel.findByIdAndUpdate(
+            id,
+            {
+                $set: {
+                    provinceId: provinceId,
+                    districtId: districtId,
+                    wardId: wardId,
+                    address: address,
+                    street: street,
+                },
+            },
+            { new: true, runValidators: true }
+        );
+
+        return res.json({ message: MSG_ADD_ADDRESS_SUCCESS });
+    } catch (error: ResponseError | any) {
+        const { status, message } = handleError(error);
+        return next(new ResponseError(status, message));
+    }
+};
+
 export const removeAddressUser = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => {};
+) => {
+    try {
+        const { addressId } = req.body as { addressId: Schema.Types.ObjectId };
+        const { userId } = decodeToken(req);
+
+        await UserModel.findByIdAndUpdate(
+            userId,
+            { $pull: { address: addressId } },
+            { new: true }
+        );
+
+        await AddressModel.findByIdAndDelete(addressId);
+
+        return res.json({ message: MSG_REMOVE_ADDRESS_SUCCESS });
+    } catch (error: ResponseError | any) {
+        const { status, message } = handleError(error);
+        return next(new ResponseError(status, message));
+    }
+};
 
 export const addProductToFavorites = async (
     req: Request,
