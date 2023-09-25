@@ -37,3 +37,7 @@ export const MSG_UPDATE_PROFILE_SUCCESS = "Cập nhật thông tin tài khoa�
 export const MSG_UPDATE_AVATAR_SUCCESS = "Cập nhật ảnh đại diện thành công.";
 
 export const MSG_ADD_ADDRESS_SUCCESS = "Thêm địa chỉ thành công.";
+
+export const MSG_UPDATE_ADDRESS_SUCCESS = "Cập nhật địa chỉ thành công.";
+
+export const MSG_REMOVE_ADDRESS_SUCCESS = "Xóa địa chỉ thành công.";
