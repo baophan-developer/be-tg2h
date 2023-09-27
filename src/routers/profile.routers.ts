@@ -16,6 +16,6 @@ profileRouters.put("/update-profile", updateProfile);
 profileRouters.put("/update-avatar", uploadMemories.single("avatar"), updateAvatar);
 profileRouters.post("/create-address", addAddressUser);
 profileRouters.put("/update-address", editAddressUser);
-profileRouters.delete("/delete-address", removeAddressUser);
+profileRouters.delete("/delete-address/:id", removeAddressUser);
 
 export default profileRouters;
