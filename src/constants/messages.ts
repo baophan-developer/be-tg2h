@@ -44,3 +44,11 @@ export const MSG_REMOVE_ADDRESS_SUCCESS = "Xóa địa chỉ thành công.";
 
 // Check admin login
 export const MSG_ERROR_FORBIDDEN = "Bạn không có quyền truy cập.";
+
+// Size screen controller
+export const MSG_CREATE_SIZE_SCREEN_SUCCESS = "Tạo mới kích cỡ màn hình thành công.";
+export const MSG_UPDATE_SIZE_SCREEN_SUCCESS = "Cập nhật kích cỡ màn hình thành công.";
+export const MSG_DELETE_SIZE_SCREEN_SUCCESS = "Xóa kích cỡ màn hình thành công.";
+
+export const MSG_DELETE_SIZE_SCREEN_FAIL = "Xóa kích cỡ màn hình không thành công.";
+export const MSG_UPDATE_SIZE_SCREEN_FAIL = "Cập nhật kích cỡ màn hình không thành công.";
