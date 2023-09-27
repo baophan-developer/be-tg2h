@@ -162,16 +162,16 @@ export const removeAddressUser = async (
     next: NextFunction
 ) => {
     try {
-        const { addressId } = req.body as { addressId: Schema.Types.ObjectId };
+        const { id } = req.params as { id: string };
         const { userId } = decodeToken(req);
 
         await UserModel.findByIdAndUpdate(
             userId,
-            { $pull: { address: addressId } },
+            { $pull: { address: id } },
             { new: true }
         );
 
-        await AddressModel.findByIdAndDelete(addressId);
+        await AddressModel.findByIdAndDelete(id);
 
         return res.json({ message: MSG_REMOVE_ADDRESS_SUCCESS });
     } catch (error: ResponseError | any) {
