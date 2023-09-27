@@ -41,3 +41,6 @@ export const MSG_ADD_ADDRESS_SUCCESS = "Thêm địa chỉ thành công.";
 export const MSG_UPDATE_ADDRESS_SUCCESS = "Cập nhật địa chỉ thành công.";
 
 export const MSG_REMOVE_ADDRESS_SUCCESS = "Xóa địa chỉ thành công.";
+
+// Check admin login
+export const MSG_ERROR_FORBIDDEN = "Bạn không có quyền truy cập.";
