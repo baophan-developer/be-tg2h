@@ -11,6 +11,7 @@ import typeRomRouters from "./type-rom.routers";
 import capacityRomRouters from "./capacity-rom.routers";
 import gpuRouters from "./gpu.routers";
 import branchRouters from "./branch.routers";
+import categoryRouters from "./category.routers";
 
 const routers = express();
 
@@ -31,9 +32,11 @@ routers.use("/type-ram", verifyToken, verifyAdmin, typeRamRouters);
 // Rom
 routers.use("/capacity-rom", verifyToken, verifyAdmin, capacityRomRouters);
 routers.use("/type-rom", verifyToken, verifyAdmin, typeRomRouters);
-// GPU
+// Gpu
 routers.use("/gpu", verifyToken, verifyAdmin, gpuRouters);
 // Branch
 routers.use("/branch", verifyToken, verifyAdmin, branchRouters);
+// Category
+routers.use("/category", verifyToken, verifyAdmin, categoryRouters);
 
 export default routers;

@@ -9,7 +9,7 @@ import {
     MSG_UPDATE_GPU_SUCCESS,
 } from "../constants/messages";
 import HttpStatusCode from "../enums/http-status-code";
-import GpuModel, { IGpu } from "../models/gpu";
+import GpuModel, { IGpu } from "../models/Gpu";
 
 export const getAllGpu = async (req: Request, res: Response, next: NextFunction) => {
     try {
