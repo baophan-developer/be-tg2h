@@ -121,10 +121,18 @@ export const MSG_DELETE_CATEGORY_SUCCESS = "Xóa nhu cầu thành công.";
 export const MSG_UPDATE_CATEGORY_FAIL = "Cập nhật nhu cầu thất bại.";
 export const MSG_DELETE_CATEGORY_FAIL = "Xóa nhu cầu thất bại.";
 
-// Os rom controller
+// Os controller
 export const MSG_CREATE_OS_SUCCESS = "Tạo mới hệ điều hành thành công.";
 export const MSG_UPDATE_OS_SUCCESS = "Cập nhật hệ điều hành thành công.";
 export const MSG_DELETE_OS_SUCCESS = "Xóa hệ điều hành thành công.";
 
 export const MSG_UPDATE_OS_FAIL = "Cập nhật hệ điều hành thất bại.";
 export const MSG_DELETE_OS_FAIL = "Xóa hệ điều hành thất bại.";
+
+// Cpu controller
+export const MSG_CREATE_CPU_SUCCESS = "Tạo mới CPU hành thành công.";
+export const MSG_UPDATE_CPU_SUCCESS = "Cập nhật CPU hành thành công.";
+export const MSG_DELETE_CPU_SUCCESS = "Xóa CPU hành thành công.";
+
+export const MSG_UPDATE_CPU_FAIL = "Cập nhật CPU hành thất bại.";
+export const MSG_DELETE_CPU_FAIL = "Xóa CPU hành thất bại.";
