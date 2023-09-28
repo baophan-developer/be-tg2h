@@ -13,6 +13,7 @@ import gpuRouters from "./gpu.routers";
 import branchRouters from "./branch.routers";
 import categoryRouters from "./category.routers";
 import osRouters from "./os.routers";
+import cpuRouters from "./cpu.routers";
 
 const routers = express();
 
@@ -41,5 +42,7 @@ routers.use("/branch", verifyToken, verifyAdmin, branchRouters);
 routers.use("/category", verifyToken, verifyAdmin, categoryRouters);
 // OS
 routers.use("/os", verifyToken, verifyAdmin, osRouters);
+// Cpu
+routers.use("/cpu", verifyToken, verifyAdmin, cpuRouters);
 
 export default routers;
