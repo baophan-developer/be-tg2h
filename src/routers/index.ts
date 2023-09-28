@@ -7,6 +7,7 @@ import verifyAdmin from "../middlewares/verify-admin";
 import scanFrequencyScreenRouters from "./scan-frequency-screen.routers";
 import capacityRamRouters from "./capacity-ram.routers";
 import typeRamRouters from "./type-ram.routers";
+import typeRomRouters from "./type-rom.routers";
 
 const routers = express();
 
@@ -24,5 +25,7 @@ routers.use(
 // Ram
 routers.use("/capacity-ram", verifyToken, verifyAdmin, capacityRamRouters);
 routers.use("/type-ram", verifyToken, verifyAdmin, typeRamRouters);
+// Rom
+routers.use("/type-rom", verifyToken, verifyAdmin, typeRomRouters);
 
 export default routers;

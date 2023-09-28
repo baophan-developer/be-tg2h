@@ -80,3 +80,11 @@ export const MSG_DELETE_TYPE_RAM_SUCCESS = "Xóa loại RAM thành công.";
 
 export const MSG_UPDATE_TYPE_RAM_FAIL = "Cập nhật loại RAM thất bại.";
 export const MSG_DELETE_TYPE_RAM_FAIL = "Xóa loại RAM thất bại.";
+
+// Type rom controller
+export const MSG_CREATE_TYPE_ROM_SUCCESS = "Tạo mới loại ROM thành công.";
+export const MSG_UPDATE_TYPE_ROM_SUCCESS = "Cập nhật loại ROM thành công.";
+export const MSG_DELETE_TYPE_ROM_SUCCESS = "Xóa loại ROM thành công.";
+
+export const MSG_UPDATE_TYPE_ROM_FAIL = "Cập nhật loại ROM thất bại.";
+export const MSG_DELETE_TYPE_ROM_FAIL = "Xóa loại ROM thất bại.";
