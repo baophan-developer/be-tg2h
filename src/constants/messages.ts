@@ -112,3 +112,11 @@ export const MSG_DELETE_BRANCH_SUCCESS = "Xóa thương hiệu thành công."
 
 export const MSG_UPDATE_BRANCH_FAIL = "Cập nhật thương hiệu thất bại.";
 export const MSG_DELETE_BRANCH_FAIL = "Xóa thương hiệu thất bại.";
+
+// Category rom controller
+export const MSG_CREATE_CATEGORY_SUCCESS = "Tạo mới nhu cầu thành công.";
+export const MSG_UPDATE_CATEGORY_SUCCESS = "Cập nhật nhu cầu thành công.";
+export const MSG_DELETE_CATEGORY_SUCCESS = "Xóa nhu cầu thành công.";
+
+export const MSG_UPDATE_CATEGORY_FAIL = "Cập nhật nhu cầu thất bại.";
+export const MSG_DELETE_CATEGORY_FAIL = "Xóa nhu cầu thất bại.";
