@@ -6,6 +6,7 @@ import sizeScreenRouters from "./size-screen.routers";
 import verifyAdmin from "../middlewares/verify-admin";
 import scanFrequencyScreenRouters from "./scan-frequency-screen.routers";
 import capacityRamRouters from "./capacity-ram.routers";
+import typeRamRouters from "./type-ram.routers";
 
 const routers = express();
 
@@ -22,5 +23,6 @@ routers.use(
 );
 // Ram
 routers.use("/capacity-ram", verifyToken, verifyAdmin, capacityRamRouters);
+routers.use("/type-ram", verifyToken, verifyAdmin, typeRamRouters);
 
 export default routers;
