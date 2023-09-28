@@ -4,6 +4,7 @@ import handleError from "../utils/handle-error";
 import {
     MSG_CREATE_TYPE_RAM_SUCCESS,
     MSG_DELETE_TYPE_RAM_FAIL,
+    MSG_DELETE_TYPE_RAM_SUCCESS,
     MSG_UPDATE_TYPE_RAM_FAIL,
     MSG_UPDATE_TYPE_RAM_SUCCESS,
 } from "../constants/messages";
@@ -54,7 +55,7 @@ export const deleteTypeRam = async (req: Request, res: Response, next: NextFunct
         if (!deleteItem)
             throw new ResponseError(HttpStatusCode.NOT_FOUND, MSG_DELETE_TYPE_RAM_FAIL);
 
-        return res.json({ message: MSG_UPDATE_TYPE_RAM_SUCCESS });
+        return res.json({ message: MSG_DELETE_TYPE_RAM_SUCCESS });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
     }
