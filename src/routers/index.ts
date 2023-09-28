@@ -8,6 +8,7 @@ import scanFrequencyScreenRouters from "./scan-frequency-screen.routers";
 import capacityRamRouters from "./capacity-ram.routers";
 import typeRamRouters from "./type-ram.routers";
 import typeRomRouters from "./type-rom.routers";
+import capacityRomRouters from "./capacity-rom.routers";
 
 const routers = express();
 
@@ -26,6 +27,7 @@ routers.use(
 routers.use("/capacity-ram", verifyToken, verifyAdmin, capacityRamRouters);
 routers.use("/type-ram", verifyToken, verifyAdmin, typeRamRouters);
 // Rom
+routers.use("/capacity-rom", verifyToken, verifyAdmin, capacityRomRouters);
 routers.use("/type-rom", verifyToken, verifyAdmin, typeRomRouters);
 
 export default routers;
