@@ -9,6 +9,7 @@ import capacityRamRouters from "./capacity-ram.routers";
 import typeRamRouters from "./type-ram.routers";
 import typeRomRouters from "./type-rom.routers";
 import capacityRomRouters from "./capacity-rom.routers";
+import gpuRouters from "./gpu.routers";
 
 const routers = express();
 
@@ -29,5 +30,7 @@ routers.use("/type-ram", verifyToken, verifyAdmin, typeRamRouters);
 // Rom
 routers.use("/capacity-rom", verifyToken, verifyAdmin, capacityRomRouters);
 routers.use("/type-rom", verifyToken, verifyAdmin, typeRomRouters);
+// GPU
+routers.use("/gpu", verifyToken, verifyAdmin, gpuRouters);
 
 export default routers;

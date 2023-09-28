@@ -96,3 +96,11 @@ export const MSG_DELETE_CAPACITY_ROM_SUCCESS = "Xóa dung lượng ROM thành
 
 export const MSG_UPDATE_CAPACITY_ROM_FAIL = "Cập nhật dung lượng ROM thất bại.";
 export const MSG_DELETE_CAPACITY_ROM_FAIL = "Xóa dung lượng ROM thất bại.";
+
+// Capacity rom controller
+export const MSG_CREATE_GPU_SUCCESS = "Tạo mới GPU thành công.";
+export const MSG_UPDATE_GPU_SUCCESS = "Cập nhật GPU thành công.";
+export const MSG_DELETE_GPU_SUCCESS = "Xóa GPU thành công.";
+
+export const MSG_UPDATE_GPU_FAIL = "Cập nhật GPU thất bại.";
+export const MSG_DELETE_GPU_FAIL = "Xóa GPU thất bại.";
