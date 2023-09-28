@@ -52,3 +52,15 @@ export const MSG_DELETE_SIZE_SCREEN_SUCCESS = "Xóa kích cỡ màn hình t
 
 export const MSG_DELETE_SIZE_SCREEN_FAIL = "Xóa kích cỡ màn hình không thành công.";
 export const MSG_UPDATE_SIZE_SCREEN_FAIL = "Cập nhật kích cỡ màn hình không thành công.";
+
+// Scan frequency screen controller
+export const MSG_CREATE_SCAN_FREQUENCY_SCREEN_SUCCESS =
+    "Tạo mới tần số quét màn hình thành công.";
+export const MSG_UPDATE_SCAN_FREQUENCY_SCREEN_SUCCESS =
+    "Cập nhật tần số quét màn hình thành công.";
+export const MSG_DELETE_SCAN_FREQUENCY_SCREEN_SUCCESS =
+    "Xóa tần số quét màn hình thành công.";
+
+export const MSG_UPDATE_SCAN_FREQUENCY_SCREEN_FAIL =
+    "Cập nhật tần số quét màn hình thất bại.";
+export const MSG_DELETE_SCAN_FREQUENCY_SCREEN_FAIL = "Xóa tần số quét màn hình thất bại.";
