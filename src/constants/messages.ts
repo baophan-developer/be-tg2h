@@ -88,3 +88,11 @@ export const MSG_DELETE_TYPE_ROM_SUCCESS = "Xóa loại ROM thành công.";
 
 export const MSG_UPDATE_TYPE_ROM_FAIL = "Cập nhật loại ROM thất bại.";
 export const MSG_DELETE_TYPE_ROM_FAIL = "Xóa loại ROM thất bại.";
+
+// Capacity rom controller
+export const MSG_CREATE_CAPACITY_ROM_SUCCESS = "Tạo mới dung lượng ROM thành công.";
+export const MSG_UPDATE_CAPACITY_ROM_SUCCESS = "Cập nhật dung lượng ROM thành công.";
+export const MSG_DELETE_CAPACITY_ROM_SUCCESS = "Xóa dung lượng ROM thành công.";
+
+export const MSG_UPDATE_CAPACITY_ROM_FAIL = "Cập nhật dung lượng ROM thất bại.";
+export const MSG_DELETE_CAPACITY_ROM_FAIL = "Xóa dung lượng ROM thất bại.";
