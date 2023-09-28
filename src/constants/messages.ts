@@ -64,3 +64,12 @@ export const MSG_DELETE_SCAN_FREQUENCY_SCREEN_SUCCESS =
 export const MSG_UPDATE_SCAN_FREQUENCY_SCREEN_FAIL =
     "Cập nhật tần số quét màn hình thất bại.";
 export const MSG_DELETE_SCAN_FREQUENCY_SCREEN_FAIL = "Xóa tần số quét màn hình thất bại.";
+
+// Capacity ram controller
+
+export const MSG_CREATE_CAPACITY_RAM_SUCCESS = "Tạo mới dung lượng RAM thành công.";
+export const MSG_UPDATE_CAPACITY_RAM_SUCCESS = "Cập nhật dung lượng RAM thành công.";
+export const MSG_DELETE_CAPACITY_RAM_SUCCESS = "Xóa dung lượng RAM thành công.";
+
+export const MSG_UPDATE_CAPACITY_RAM_FAIL = "Cập nhật dung lượng RAM thất bại.";
+export const MSG_DELETE_CAPACITY_RAM_FAIL = "Xóa dung lượng RAM thất bại.";
