@@ -12,6 +12,7 @@ import capacityRomRouters from "./capacity-rom.routers";
 import gpuRouters from "./gpu.routers";
 import branchRouters from "./branch.routers";
 import categoryRouters from "./category.routers";
+import osRouters from "./os.routers";
 
 const routers = express();
 
@@ -38,5 +39,7 @@ routers.use("/gpu", verifyToken, verifyAdmin, gpuRouters);
 routers.use("/branch", verifyToken, verifyAdmin, branchRouters);
 // Category
 routers.use("/category", verifyToken, verifyAdmin, categoryRouters);
+// OS
+routers.use("/os", verifyToken, verifyAdmin, osRouters);
 
 export default routers;
