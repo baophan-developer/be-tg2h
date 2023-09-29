@@ -5,12 +5,13 @@ import {
     getAllCpu,
     updateCpu,
 } from "../controllers/cpu.controller";
+import verifyAdmin from "../middlewares/verify-admin";
 
 const cpuRouters: Router = express.Router();
 
 cpuRouters.get("/", getAllCpu);
-cpuRouters.post("/create", createCpu);
-cpuRouters.put("/update", updateCpu);
-cpuRouters.delete("/delete/:id", deleteCpu);
+cpuRouters.post("/", verifyAdmin, createCpu);
+cpuRouters.put("/", verifyAdmin, updateCpu);
+cpuRouters.delete("/:id", verifyAdmin, deleteCpu);
 
 export default cpuRouters;

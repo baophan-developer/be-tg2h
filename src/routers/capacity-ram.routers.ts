@@ -5,12 +5,13 @@ import {
     getAllCapacityRam,
     updateCapacityRam,
 } from "../controllers/capacity-ram.controller";
+import verifyAdmin from "../middlewares/verify-admin";
 
 const capacityRamRouters: Router = express.Router();
 
 capacityRamRouters.get("/", getAllCapacityRam);
-capacityRamRouters.post("/create", createCapacityRam);
-capacityRamRouters.put("/update", updateCapacityRam);
-capacityRamRouters.delete("/delete/:id", deleteCapacityRam);
+capacityRamRouters.post("/", verifyAdmin, createCapacityRam);
+capacityRamRouters.put("/", verifyAdmin, updateCapacityRam);
+capacityRamRouters.delete("/:id", verifyAdmin, deleteCapacityRam);
 
 export default capacityRamRouters;

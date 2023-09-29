@@ -21,28 +21,23 @@ routers.use("/auth", authRouters);
 routers.use("/profile", verifyToken, profileRouters);
 // ?product
 // Screen
-routers.use("/size-screen", verifyToken, verifyAdmin, sizeScreenRouters);
-routers.use(
-    "/scan-frequency-screen",
-    verifyToken,
-    verifyAdmin,
-    scanFrequencyScreenRouters
-);
+routers.use("/size-screen", verifyToken, sizeScreenRouters);
+routers.use("/scan-frequency-screen", verifyToken, scanFrequencyScreenRouters);
 // Ram
-routers.use("/capacity-ram", verifyToken, verifyAdmin, capacityRamRouters);
-routers.use("/type-ram", verifyToken, verifyAdmin, typeRamRouters);
+routers.use("/capacity-ram", verifyToken, capacityRamRouters);
+routers.use("/type-ram", verifyToken, typeRamRouters);
 // Rom
-routers.use("/capacity-rom", verifyToken, verifyAdmin, capacityRomRouters);
-routers.use("/type-rom", verifyToken, verifyAdmin, typeRomRouters);
+routers.use("/capacity-rom", verifyToken, capacityRomRouters);
+routers.use("/type-rom", verifyToken, typeRomRouters);
 // Gpu
-routers.use("/gpu", verifyToken, verifyAdmin, gpuRouters);
+routers.use("/gpu", verifyToken, gpuRouters);
 // Branch
-routers.use("/branch", verifyToken, verifyAdmin, branchRouters);
+routers.use("/branch", verifyToken, branchRouters);
 // Category
-routers.use("/category", verifyToken, verifyAdmin, categoryRouters);
+routers.use("/category", verifyToken, categoryRouters);
 // OS
-routers.use("/os", verifyToken, verifyAdmin, osRouters);
+routers.use("/os", verifyToken, osRouters);
 // Cpu
-routers.use("/cpu", verifyToken, verifyAdmin, cpuRouters);
+routers.use("/cpu", verifyToken, cpuRouters);
 
 export default routers;

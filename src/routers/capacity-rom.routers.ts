@@ -5,12 +5,13 @@ import {
     getAllCapacityRom,
     updateCapacityRom,
 } from "../controllers/capacity-rom.controller";
+import verifyAdmin from "../middlewares/verify-admin";
 
 const capacityRomRouters: Router = express.Router();
 
 capacityRomRouters.get("/", getAllCapacityRom);
-capacityRomRouters.post("/create", createCapacityRom);
-capacityRomRouters.put("/update", updateCapacityRom);
-capacityRomRouters.delete("/delete/:id", deleteCapacityRom);
+capacityRomRouters.post("/", verifyAdmin, createCapacityRom);
+capacityRomRouters.put("/", verifyAdmin, updateCapacityRom);
+capacityRomRouters.delete("/:id", verifyAdmin, deleteCapacityRom);
 
 export default capacityRomRouters;

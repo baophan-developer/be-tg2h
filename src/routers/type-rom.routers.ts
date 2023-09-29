@@ -5,12 +5,13 @@ import {
     getAllTypeRom,
     updateTypeRom,
 } from "../controllers/type-rom.controller";
+import verifyAdmin from "../middlewares/verify-admin";
 
 const typeRomRouters: Router = express.Router();
 
 typeRomRouters.get("/", getAllTypeRom);
-typeRomRouters.post("/create", createTypeRom);
-typeRomRouters.put("/update", updateTypeRom);
-typeRomRouters.delete("/delete/:id", deleteTypeRom);
+typeRomRouters.post("/", verifyAdmin, createTypeRom);
+typeRomRouters.put("/", verifyAdmin, updateTypeRom);
+typeRomRouters.delete("/:id", verifyAdmin, deleteTypeRom);
 
 export default typeRomRouters;

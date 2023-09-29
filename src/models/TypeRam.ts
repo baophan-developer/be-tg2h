@@ -5,13 +5,16 @@ export interface ITypeRam {
     name: string;
 }
 
-const schemaTypeRam = new Schema<ITypeRam>({
-    name: {
-        type: String,
-        required: true,
-        unique: true,
+const schemaTypeRam = new Schema<ITypeRam>(
+    {
+        name: {
+            type: String,
+            required: true,
+            unique: true,
+        },
     },
-});
+    { timestamps: true }
+);
 
 const TypeRamModel = model<ITypeRam>("TypeRam", schemaTypeRam);
 

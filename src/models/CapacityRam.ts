@@ -5,13 +5,16 @@ export interface ICapacityRam {
     capacity: string;
 }
 
-const schemaCapacityRam = new Schema<ICapacityRam>({
-    capacity: {
-        type: String,
-        required: true,
-        unique: true,
+const schemaCapacityRam = new Schema<ICapacityRam>(
+    {
+        capacity: {
+            type: String,
+            required: true,
+            unique: true,
+        },
     },
-});
+    { timestamps: true }
+);
 
 const CapacityRamModel = model<ICapacityRam>("CapacityRam", schemaCapacityRam);
 
