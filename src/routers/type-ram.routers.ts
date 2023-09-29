@@ -5,12 +5,13 @@ import {
     getAllTypeRam,
     updateTypeRam,
 } from "../controllers/type-ram.controller";
+import verifyAdmin from "../middlewares/verify-admin";
 
 const typeRamRouters: Router = express.Router();
 
 typeRamRouters.get("/", getAllTypeRam);
-typeRamRouters.post("/create", createTypeRam);
-typeRamRouters.put("/update", updateTypeRam);
-typeRamRouters.delete("/delete/:id", deleteTypeRam);
+typeRamRouters.post("/", verifyAdmin, createTypeRam);
+typeRamRouters.put("/", verifyAdmin, updateTypeRam);
+typeRamRouters.delete("/:id", verifyAdmin, deleteTypeRam);
 
 export default typeRamRouters;

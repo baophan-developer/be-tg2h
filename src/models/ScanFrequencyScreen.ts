@@ -5,9 +5,12 @@ export interface IScanFrequencyScreen {
     scanFrequency: string;
 }
 
-const schemaScanFrequencyScreen = new Schema<IScanFrequencyScreen>({
-    scanFrequency: { type: String, required: true, unique: true },
-});
+const schemaScanFrequencyScreen = new Schema<IScanFrequencyScreen>(
+    {
+        scanFrequency: { type: String, required: true, unique: true },
+    },
+    { timestamps: true }
+);
 
 const ScanFrequencyScreenModel = model<IScanFrequencyScreen>(
     "ScanFrequencyScreen",

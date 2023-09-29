@@ -5,12 +5,13 @@ import {
     getAllCategory,
     updateCategory,
 } from "../controllers/category.controller";
+import verifyAdmin from "../middlewares/verify-admin";
 
 const categoryRouters: Router = express.Router();
 
 categoryRouters.get("/", getAllCategory);
-categoryRouters.post("/create", createCategory);
-categoryRouters.put("/update", updateCategory);
-categoryRouters.delete("/delete/:id", deleteCategory);
+categoryRouters.post("/", verifyAdmin, createCategory);
+categoryRouters.put("/", verifyAdmin, updateCategory);
+categoryRouters.delete("/:id", verifyAdmin, deleteCategory);
 
 export default categoryRouters;
