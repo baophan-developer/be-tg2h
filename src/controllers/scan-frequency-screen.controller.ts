@@ -20,8 +20,8 @@ export const getAllScanFrequencyScreen = async (
     next: NextFunction
 ) => {
     try {
-        const lists = await ScanFrequencyScreenModel.find({}, "-__v");
-        return res.json({ lists });
+        const list = await ScanFrequencyScreenModel.find({}, "-__v");
+        return res.json({ list });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
     }
