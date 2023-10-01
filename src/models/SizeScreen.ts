@@ -2,13 +2,13 @@ import { Schema, model } from "mongoose";
 
 export interface ISizeScreen {
     id: Schema.Types.ObjectId;
-    size: number;
+    size: string;
 }
 
 const schemaSizeScreen = new Schema<ISizeScreen>(
     {
         size: {
-            type: Number,
+            type: String,
             unique: true,
             required: [true, "Kích cỡ màn hình là bắt buộc."],
         },

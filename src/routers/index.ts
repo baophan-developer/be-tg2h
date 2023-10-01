@@ -14,6 +14,7 @@ import brandRouters from "./brand.routers";
 import categoryRouters from "./category.routers";
 import osRouters from "./os.routers";
 import cpuRouters from "./cpu.routers";
+import resolutionScreenRouters from "./resolution-screen.routers";
 
 const routers = express();
 
@@ -23,6 +24,7 @@ routers.use("/profile", verifyToken, profileRouters);
 // Screen
 routers.use("/size-screen", verifyToken, sizeScreenRouters);
 routers.use("/scan-frequency-screen", verifyToken, scanFrequencyScreenRouters);
+routers.use("/resolution-screen", verifyToken, resolutionScreenRouters);
 // Ram
 routers.use("/capacity-ram", verifyToken, capacityRamRouters);
 routers.use("/type-ram", verifyToken, typeRamRouters);
