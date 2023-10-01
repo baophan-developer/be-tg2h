@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import ResponseError from "../utils/error-api";
-import BranchModel, { IBranch } from "../models/Branch";
+import BranchModel, { IBranch } from "../models/Brand";
 import handleError from "../utils/handle-error";
 import {
     MSG_CREATE_BRANCH_SUCCESS,
