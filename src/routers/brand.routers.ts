@@ -1,17 +1,17 @@
 import express, { Router } from "express";
 import {
-    getAllBranch,
-    createBranch,
-    updateBranch,
-    deleteBranch,
+    getAllBrand,
+    createBrand,
+    updateBrand,
+    deleteBrand,
 } from "../controllers/brand.controller";
 import verifyAdmin from "../middlewares/verify-admin";
 
 const brandRouters: Router = express.Router();
 
-brandRouters.get("/", getAllBranch);
-brandRouters.post("/", verifyAdmin, createBranch);
-brandRouters.put("/", verifyAdmin, updateBranch);
-brandRouters.delete("/:id", verifyAdmin, deleteBranch);
+brandRouters.get("/", getAllBrand);
+brandRouters.post("/", verifyAdmin, createBrand);
+brandRouters.put("/", verifyAdmin, updateBrand);
+brandRouters.delete("/:id", verifyAdmin, deleteBrand);
 
 export default brandRouters;
