@@ -10,7 +10,7 @@ import typeRamRouters from "./type-ram.routers";
 import typeRomRouters from "./type-rom.routers";
 import capacityRomRouters from "./capacity-rom.routers";
 import gpuRouters from "./gpu.routers";
-import branchRouters from "./branch.routers";
+import brandRouters from "./brand.routers";
 import categoryRouters from "./category.routers";
 import osRouters from "./os.routers";
 import cpuRouters from "./cpu.routers";
@@ -32,7 +32,7 @@ routers.use("/type-rom", verifyToken, typeRomRouters);
 // Gpu
 routers.use("/gpu", verifyToken, gpuRouters);
 // Branch
-routers.use("/branch", verifyToken, branchRouters);
+routers.use("/brand", verifyToken, brandRouters);
 // Category
 routers.use("/category", verifyToken, categoryRouters);
 // OS

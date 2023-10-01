@@ -105,13 +105,13 @@ export const MSG_DELETE_GPU_SUCCESS = "Xóa GPU thành công.";
 export const MSG_UPDATE_GPU_FAIL = "Cập nhật GPU thất bại.";
 export const MSG_DELETE_GPU_FAIL = "Xóa GPU thất bại.";
 
-// Branch rom controller
-export const MSG_CREATE_BRANCH_SUCCESS = "Tạo mới thương hiệu thành công.";
-export const MSG_UPDATE_BRANCH_SUCCESS = "Cập nhật thương hiệu thành công.";
-export const MSG_DELETE_BRANCH_SUCCESS = "Xóa thương hiệu thành công.";
+// Brand rom controller
+export const MSG_CREATE_BRAND_SUCCESS = "Tạo mới thương hiệu thành công.";
+export const MSG_UPDATE_BRAND_SUCCESS = "Cập nhật thương hiệu thành công.";
+export const MSG_DELETE_BRAND_SUCCESS = "Xóa thương hiệu thành công.";
 
-export const MSG_UPDATE_BRANCH_FAIL = "Cập nhật thương hiệu thất bại.";
-export const MSG_DELETE_BRANCH_FAIL = "Xóa thương hiệu thất bại.";
+export const MSG_UPDATE_BRAND_FAIL = "Cập nhật thương hiệu thất bại.";
+export const MSG_DELETE_BRAND_FAIL = "Xóa thương hiệu thất bại.";
 
 // Category rom controller
 export const MSG_CREATE_CATEGORY_SUCCESS = "Tạo mới nhu cầu thành công.";

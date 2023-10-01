@@ -1,17 +1,17 @@
 import { Schema, model } from "mongoose";
 
-export interface IBranch {
+export interface IBrand {
     id: Schema.Types.ObjectId;
     name: string;
 }
 
-const schemaBranch = new Schema<IBranch>(
+const schemaBrand = new Schema<IBrand>(
     {
         name: { type: String, unique: true, required: true },
     },
     { timestamps: true }
 );
 
-const BranchModel = model<IBranch>("Branch", schemaBranch);
+const BrandModel = model<IBrand>("Branch", schemaBrand);
 
-export default BranchModel;
+export default BrandModel;
