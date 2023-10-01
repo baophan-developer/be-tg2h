@@ -136,3 +136,15 @@ export const MSG_DELETE_CPU_SUCCESS = "Xóa CPU hành thành công.";
 
 export const MSG_UPDATE_CPU_FAIL = "Cập nhật CPU hành thất bại.";
 export const MSG_DELETE_CPU_FAIL = "Xóa CPU hành thất bại.";
+
+// Cpu controller
+export const MSG_CREATE_RESOLUTION_SCREEN_SUCCESS =
+    "Tạo mới độ phân giải màn hình thành công.";
+export const MSG_UPDATE_RESOLUTION_SCREEN_SUCCESS =
+    "Cập nhật độ phân giải màn hình thành công.";
+export const MSG_DELETE_RESOLUTION_SCREEN_SUCCESS =
+    "Xóa độ phân giải màn hình thành công.";
+
+export const MSG_UPDATE_RESOLUTION_SCREEN_FAIL =
+    "Cập nhật độ phân giải màn hình thất bại.";
+export const MSG_DELETE_RESOLUTION_SCREEN_FAIL = "Xóa độ phân giải màn hình thất bại.";
