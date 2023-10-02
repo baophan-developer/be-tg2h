@@ -15,12 +15,12 @@ import categoryRouters from "./category.routers";
 import osRouters from "./os.routers";
 import cpuRouters from "./cpu.routers";
 import resolutionScreenRouters from "./resolution-screen.routers";
+import productRouters from "./product.router";
 
 const routers = express();
 
 routers.use("/auth", authRouters);
 routers.use("/profile", verifyToken, profileRouters);
-// ?product
 // Screen
 routers.use("/size-screen", verifyToken, sizeScreenRouters);
 routers.use("/scan-frequency-screen", verifyToken, scanFrequencyScreenRouters);
@@ -41,5 +41,7 @@ routers.use("/category", verifyToken, categoryRouters);
 routers.use("/os", verifyToken, osRouters);
 // Cpu
 routers.use("/cpu", verifyToken, cpuRouters);
+// Product
+routers.use("/product", verifyToken, productRouters);
 
 export default routers;

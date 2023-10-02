@@ -148,3 +148,6 @@ export const MSG_DELETE_RESOLUTION_SCREEN_SUCCESS =
 export const MSG_UPDATE_RESOLUTION_SCREEN_FAIL =
     "Cập nhật độ phân giải màn hình thất bại.";
 export const MSG_DELETE_RESOLUTION_SCREEN_FAIL = "Xóa độ phân giải màn hình thất bại.";
+
+// Product controller
+export const MSG_CREATE_PRODUCT_SUCCESS = "Thêm mới sản phẩm thành công.";

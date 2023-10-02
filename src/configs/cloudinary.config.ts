@@ -7,8 +7,11 @@ cloudinary.config({
     api_secret: configs.cloudinary.apiSecret,
 });
 
-const handleUpload = async (file: string) => {
-    const res = await cloudinary.uploader.upload(file, { resource_type: "auto" });
+const handleUpload = async (file: string, folder?: string) => {
+    const res = await cloudinary.uploader.upload(file, {
+        resource_type: "auto",
+        folder: folder,
+    });
     return res;
 };
 
