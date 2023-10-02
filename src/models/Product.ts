@@ -15,19 +15,13 @@ export interface IProduct {
     betterCapacity: string;
     newness: number;
     owner: Schema.Types.ObjectId;
-    screen: {
-        sizeScreen: Schema.Types.ObjectId;
-        scanFrequency: Schema.Types.ObjectId;
-        resolutionScreen: Schema.Types.ObjectId;
-    };
-    ram: {
-        typeRam: Schema.Types.ObjectId;
-        capacityRam: Schema.Types.ObjectId;
-    };
-    rom: {
-        typeRom: Schema.Types.ObjectId;
-        capacityRom: Schema.Types.ObjectId;
-    };
+    sizeScreen: Schema.Types.ObjectId;
+    scanFrequency: Schema.Types.ObjectId;
+    resolutionScreen: Schema.Types.ObjectId;
+    typeRam: Schema.Types.ObjectId;
+    capacityRam: Schema.Types.ObjectId;
+    typeRom: Schema.Types.ObjectId;
+    capacityRom: Schema.Types.ObjectId;
     gpu: Schema.Types.ObjectId;
     cpu: Schema.Types.ObjectId;
     os: Schema.Types.ObjectId;
@@ -92,48 +86,42 @@ const productSchema = new Schema<IProduct>({
         ref: "User",
         required: [true, "Sản phẩm phải có người sở hữu."],
     },
-    screen: {
-        sizeScreen: {
-            type: Schema.Types.ObjectId,
-            ref: "SizeScreen",
-            required: [true, "Kích cỡ màn hình là bắt buộc."],
-        },
-        scanFrequency: {
-            type: Schema.Types.ObjectId,
-            ref: "ScanFrequencyScreen",
-            required: [true, "Tần số quét màn hình là bắt buộc."],
-            default: "Không được công bố.",
-        },
-        resolutionScreen: {
-            type: Schema.Types.ObjectId,
-            ref: "ResolutionScreen",
-            required: [true, "Độ phân giải màn hình là bắt buộc."],
-        },
+    sizeScreen: {
+        type: Schema.Types.ObjectId,
+        ref: "SizeScreen",
+        required: [true, "Kích cỡ màn hình là bắt buộc."],
     },
-    ram: {
-        typeRam: {
-            type: Schema.Types.ObjectId,
-            ref: "TypeRam",
-            required: [true, "Công nghệ RAM là bắt buộc."],
-            default: "Không được công bố.",
-        },
-        capacityRam: {
-            type: Schema.Types.ObjectId,
-            ref: "CapacityRam",
-            required: [true, "Dung lượng RAM là bắt buộc."],
-        },
+    scanFrequency: {
+        type: Schema.Types.ObjectId,
+        ref: "ScanFrequencyScreen",
+        required: [true, "Tần số quét màn hình là bắt buộc."],
+        default: "Không được công bố.",
     },
-    rom: {
-        typeRom: {
-            type: Schema.Types.ObjectId,
-            ref: "TypeRom",
-            required: [true, "Công nghệ ROM là bắt buộc."],
-        },
-        capacityRom: {
-            type: Schema.Types.ObjectId,
-            ref: "CapacityRom",
-            required: [true, "Dung lượng ROM là bắt buộc."],
-        },
+    resolutionScreen: {
+        type: Schema.Types.ObjectId,
+        ref: "ResolutionScreen",
+        required: [true, "Độ phân giải màn hình là bắt buộc."],
+    },
+    typeRam: {
+        type: Schema.Types.ObjectId,
+        ref: "TypeRam",
+        required: [true, "Công nghệ RAM là bắt buộc."],
+        default: "Không được công bố.",
+    },
+    capacityRam: {
+        type: Schema.Types.ObjectId,
+        ref: "CapacityRam",
+        required: [true, "Dung lượng RAM là bắt buộc."],
+    },
+    typeRom: {
+        type: Schema.Types.ObjectId,
+        ref: "TypeRom",
+        required: [true, "Công nghệ ROM là bắt buộc."],
+    },
+    capacityRom: {
+        type: Schema.Types.ObjectId,
+        ref: "CapacityRom",
+        required: [true, "Dung lượng ROM là bắt buộc."],
     },
     gpu: {
         type: Schema.Types.ObjectId,
