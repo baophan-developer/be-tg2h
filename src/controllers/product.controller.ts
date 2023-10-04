@@ -9,10 +9,11 @@ import { MSG_CREATE_PRODUCT_SUCCESS } from "../constants/messages";
 
 interface IFilterProduct {}
 
+const removeAttributePopulated = "-__v -createdAt -updatedAt";
+
 export const getProducts = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const {} = req.body as {};
-        const removeAttributePopulated = "-__v -createdAt -updatedAt";
         const products = await ProductModel.find({})
             .populate("sizeScreen", removeAttributePopulated)
             .populate("scanFrequency", removeAttributePopulated)
@@ -50,5 +51,31 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
     } catch (error: any) {
         const { status, message } = handleError(error);
         return next(new ResponseError(status, message));
+    }
+};
+
+export const getDetailProduct = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { id } = req.params;
+        const product = await ProductModel.findById(id)
+            .populate("sizeScreen", removeAttributePopulated)
+            .populate("scanFrequency", removeAttributePopulated)
+            .populate("resolutionScreen", removeAttributePopulated)
+            .populate("typeRam", removeAttributePopulated)
+            .populate("capacityRam", removeAttributePopulated)
+            .populate("typeRom", removeAttributePopulated)
+            .populate("capacityRom", removeAttributePopulated)
+            .populate("gpu", removeAttributePopulated)
+            .populate("cpu", removeAttributePopulated)
+            .populate("os", removeAttributePopulated)
+            .populate("category", removeAttributePopulated)
+            .populate("brand", removeAttributePopulated);
+        return res.json({ item: product });
+    } catch (error: any) {
+        return next(new ResponseError(error.status, error.message));
     }
 };
