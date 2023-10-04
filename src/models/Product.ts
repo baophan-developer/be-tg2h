@@ -40,6 +40,7 @@ const productSchema = new Schema<IProduct>({
     },
     images: {
         type: [String],
+        required: [true, "Chưa cung cấp hình ảnh sản phẩm."],
     },
     desc: {
         type: String,

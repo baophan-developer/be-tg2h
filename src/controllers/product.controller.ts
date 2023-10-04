@@ -36,9 +36,16 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
     try {
         const productInfo = req.body as IProduct;
         const { userId } = decodeToken(req);
-        const product = await ProductModel.create({ ...productInfo, owner: userId });
-        const images = await uploadMultipleHandler(req, res);
-        await ProductModel.findByIdAndUpdate(product._id, { $set: { images: images } });
+        const images = (await uploadMultipleHandler(req, res)) as [];
+
+        if ((images && images?.length === 0) || typeof images === "object")
+            throw new ResponseError(400, "Không thể upload hình ảnh");
+
+        await ProductModel.create({
+            ...productInfo,
+            images: images,
+            owner: userId,
+        });
         return res.json({ message: MSG_CREATE_PRODUCT_SUCCESS });
     } catch (error: any) {
         const { status, message } = handleError(error);
