@@ -75,7 +75,6 @@ const productSchema = new Schema<IProduct>({
     },
     betterCapacity: {
         type: String,
-        default: "Không được công bố.",
     },
     newness: {
         type: Number,
@@ -95,7 +94,6 @@ const productSchema = new Schema<IProduct>({
         type: Schema.Types.ObjectId,
         ref: "ScanFrequencyScreen",
         required: [true, "Tần số quét màn hình là bắt buộc."],
-        default: "Không được công bố.",
     },
     resolutionScreen: {
         type: Schema.Types.ObjectId,
@@ -106,7 +104,6 @@ const productSchema = new Schema<IProduct>({
         type: Schema.Types.ObjectId,
         ref: "TypeRam",
         required: [true, "Công nghệ RAM là bắt buộc."],
-        default: "Không được công bố.",
     },
     capacityRam: {
         type: Schema.Types.ObjectId,
