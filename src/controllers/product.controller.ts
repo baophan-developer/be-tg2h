@@ -1,4 +1,3 @@
-import { emailRegex } from "./../regex/index";
 import { Request, Response, NextFunction } from "express";
 import ResponseError from "../utils/error-api";
 import handleError from "../utils/handle-error";
@@ -9,8 +8,11 @@ import {
     MSG_APPROVE_PRODUCT_SUCCESS,
     MSG_CREATE_PRODUCT_SUCCESS,
     MSG_ERROR_ACCOUNT_NOT_EXISTED,
+    MSG_ERROR_YOU_ARE_NOT_OWNER,
     MSG_PRODUCT_NOT_FOUND,
     MSG_REJECT_PRODUCT_SUCCESS,
+    MSG_UPDATE_PRODUCT_FAILED,
+    MSG_UPDATE_PRODUCT_SUCCESS,
 } from "../constants/messages";
 import UserModel from "../models/User";
 import transporter from "../configs/mail.config";
@@ -116,8 +118,38 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
 
 export const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const {} = req.body as IProduct;
-    } catch (error) {}
+        const product = req.body as IProduct;
+
+        const { userId } = decodeToken(req);
+
+        const userUpdateId = userId as unknown;
+        const owner = product.owner as unknown;
+
+        if (userUpdateId !== owner)
+            throw new ResponseError(400, MSG_ERROR_YOU_ARE_NOT_OWNER);
+
+        const images = (await uploadMultipleHandler(req, res)) as [];
+
+        if (images && images?.length === 0)
+            throw new ResponseError(400, "Không thể upload hình ảnh");
+
+        console.log(images);
+
+        const update = await ProductModel.findByIdAndUpdate(
+            product.id,
+            {
+                $set: { ...product },
+                $push: { images: { $each: images } },
+            },
+            { new: true, runValidators: true }
+        );
+        if (!update) throw new ResponseError(400, MSG_UPDATE_PRODUCT_FAILED);
+
+        return res.json({ message: MSG_UPDATE_PRODUCT_SUCCESS });
+    } catch (error: any) {
+        const { status, message } = handleError(error);
+        return next(new ResponseError(status, message));
+    }
 };
 
 export const approveProduct = async (req: Request, res: Response, next: NextFunction) => {

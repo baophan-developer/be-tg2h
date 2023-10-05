@@ -45,6 +45,7 @@ const productSchema = new Schema<IProduct>({
     desc: {
         type: String,
         maxlength: [PRODUCT.DESC.MAX, "Mô tả chỉ được phép tối đa {VALUE} ký tự."],
+        default: "",
     },
     price: {
         type: Number,
