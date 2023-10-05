@@ -8,13 +8,15 @@ import AddressModel, { IAdress } from "../models/Address";
 import ProductModel from "../models/Product";
 import {
     MSG_ADD_ADDRESS_SUCCESS,
+    MSG_ERROR_ACCOUNT_NOT_EXISTED,
     MSG_ERROR_GET_PROFILE_FAILED,
     MSG_REMOVE_ADDRESS_SUCCESS,
     MSG_UPDATE_AVATAR_SUCCESS,
     MSG_UPDATE_PROFILE_SUCCESS,
 } from "../constants/messages";
 import { uploadHandler } from "../configs/upload.config";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, connection } from "mongoose";
+import { destroyFile } from "../configs/cloudinary.config";
 
 export const getProfile = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -79,10 +81,28 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
     }
 };
 
+const getPublicIdFile = (url: string) => {
+    const arr = url.split("/");
+    const publicId = arr[arr.length - 1].split(".")[0];
+    return publicId;
+};
+
 export const updateAvatar = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const result = await uploadHandler(req, res);
         const { userId } = decodeToken(req);
+
+        const user = await UserModel.findById(userId);
+
+        if (!user) throw new ResponseError(404, MSG_ERROR_ACCOUNT_NOT_EXISTED);
+
+        const avatarOld = user.avatar;
+        const publicId = getPublicIdFile(avatarOld);
+        console.log(publicId);
+
+        // delete old file on cloudinary
+        await destroyFile(publicId, "avatar");
+
+        const result = await uploadHandler(req, res);
 
         await UserModel.findByIdAndUpdate(
             userId,

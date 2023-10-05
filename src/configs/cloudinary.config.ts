@@ -15,4 +15,13 @@ const handleUpload = async (file: string, folder?: string) => {
     return res;
 };
 
+const destroyFile = async (publicId: string, folder?: string) => {
+    const res = await cloudinary.uploader.destroy(`${folder}/${publicId}`, {
+        resource_type: "image",
+    });
+    return res;
+};
+
+export { destroyFile };
+
 export default handleUpload;
