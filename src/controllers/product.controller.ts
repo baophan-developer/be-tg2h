@@ -1,10 +1,19 @@
+import { emailRegex } from "./../regex/index";
 import { Request, Response, NextFunction } from "express";
 import ResponseError from "../utils/error-api";
 import handleError from "../utils/handle-error";
 import decodeToken from "../utils/decode-token";
 import ProductModel, { IProduct } from "../models/Product";
 import { uploadMultipleHandler } from "../configs/upload.config";
-import { MSG_CREATE_PRODUCT_SUCCESS } from "../constants/messages";
+import {
+    MSG_APPROVE_PRODUCT_SUCCESS,
+    MSG_CREATE_PRODUCT_SUCCESS,
+    MSG_ERROR_ACCOUNT_NOT_EXISTED,
+    MSG_PRODUCT_NOT_FOUND,
+    MSG_REJECT_PRODUCT_SUCCESS,
+} from "../constants/messages";
+import UserModel from "../models/User";
+import transporter from "../configs/mail.config";
 
 interface IQueryProduct {
     filters: any;
@@ -119,11 +128,35 @@ export const approveProduct = async (req: Request, res: Response, next: NextFunc
             { $set: { approve: true } },
             { new: true }
         );
+        return res.json({ message: MSG_APPROVE_PRODUCT_SUCCESS });
     } catch (error) {}
 };
 
 export const rejectProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // delete product and reason reject
-    } catch (error) {}
+        const { id, reason } = req.body;
+
+        const product = await ProductModel.findByIdAndDelete(id);
+
+        if (!product) throw new ResponseError(404, MSG_PRODUCT_NOT_FOUND);
+
+        const user = await UserModel.findById(product.owner);
+
+        if (!user) throw new ResponseError(404, MSG_ERROR_ACCOUNT_NOT_EXISTED);
+
+        transporter.sendMail(
+            {
+                to: user.email,
+                subject: "Từ chối sản phẩm!",
+                text: reason,
+            },
+            function (err) {
+                if (err) return next(new ResponseError(500));
+                transporter.close();
+            }
+        );
+        return res.json({ message: MSG_REJECT_PRODUCT_SUCCESS });
+    } catch (error: any) {
+        return next(new ResponseError(error.status, error.message));
+    }
 };

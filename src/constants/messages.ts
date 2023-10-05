@@ -151,3 +151,8 @@ export const MSG_DELETE_RESOLUTION_SCREEN_FAIL = "Xóa độ phân giải mà
 
 // Product controller
 export const MSG_CREATE_PRODUCT_SUCCESS = "Thêm mới sản phẩm thành công.";
+
+export const MSG_APPROVE_PRODUCT_SUCCESS = "Đã duyệt sản phẩm";
+export const MSG_REJECT_PRODUCT_SUCCESS = "Đã từ chối sản phẩm";
+
+export const MSG_PRODUCT_NOT_FOUND = "Không tìm thấy sản phẩm.";
