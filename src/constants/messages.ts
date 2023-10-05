@@ -148,3 +148,16 @@ export const MSG_DELETE_RESOLUTION_SCREEN_SUCCESS =
 export const MSG_UPDATE_RESOLUTION_SCREEN_FAIL =
     "Cập nhật độ phân giải màn hình thất bại.";
 export const MSG_DELETE_RESOLUTION_SCREEN_FAIL = "Xóa độ phân giải màn hình thất bại.";
+
+// Product controller
+export const MSG_CREATE_PRODUCT_SUCCESS = "Thêm mới sản phẩm thành công.";
+
+export const MSG_UPDATE_PRODUCT_SUCCESS = "Cập nhật sản phẩm thành công.";
+export const MSG_UPDATE_PRODUCT_FAILED = "Cập nhật sản phẩm thất bại.";
+
+export const MSG_ERROR_YOU_ARE_NOT_OWNER = "Bạn không có quyền chỉnh sửa sản phẩm.";
+
+export const MSG_APPROVE_PRODUCT_SUCCESS = "Đã duyệt sản phẩm";
+export const MSG_REJECT_PRODUCT_SUCCESS = "Đã từ chối sản phẩm";
+
+export const MSG_PRODUCT_NOT_FOUND = "Không tìm thấy sản phẩm.";
