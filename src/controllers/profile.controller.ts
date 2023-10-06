@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import ResponseError from "../utils/error-api";
 import handleError from "../utils/handle-error";
 import decodeToken from "../utils/decode-token";
+import getPublicIdFile from "../utils/get-public-id";
 import UserModel from "../models/User";
 import HttpStatusCode from "../enums/http-status-code";
 import AddressModel, { IAdress } from "../models/Address";
@@ -15,7 +16,7 @@ import {
     MSG_UPDATE_PROFILE_SUCCESS,
 } from "../constants/messages";
 import { uploadHandler } from "../configs/upload.config";
-import mongoose, { Schema, connection } from "mongoose";
+import { Schema } from "mongoose";
 import { destroyFile } from "../configs/cloudinary.config";
 
 export const getProfile = async (req: Request, res: Response, next: NextFunction) => {
@@ -79,12 +80,6 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
         const { status, message } = handleError(error);
         return next(new ResponseError(status, message));
     }
-};
-
-const getPublicIdFile = (url: string) => {
-    const arr = url.split("/");
-    const publicId = arr[arr.length - 1].split(".")[0];
-    return publicId;
 };
 
 export const updateAvatar = async (req: Request, res: Response, next: NextFunction) => {

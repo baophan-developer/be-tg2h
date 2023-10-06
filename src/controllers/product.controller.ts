@@ -16,6 +16,8 @@ import {
 } from "../constants/messages";
 import UserModel from "../models/User";
 import transporter from "../configs/mail.config";
+import { destroyFile } from "../configs/cloudinary.config";
+import getPublicIdFile from "../utils/get-public-id";
 
 interface IQueryProduct {
     filters: any;
@@ -168,9 +170,16 @@ export const rejectProduct = async (req: Request, res: Response, next: NextFunct
     try {
         const { id, reason } = req.body;
 
-        const product = await ProductModel.findByIdAndDelete(id);
+        const product = await ProductModel.findById(id);
 
         if (!product) throw new ResponseError(404, MSG_PRODUCT_NOT_FOUND);
+
+        const images = product.images;
+
+        images.forEach(async (item) => {
+            const publicId = getPublicIdFile(item);
+            await destroyFile(publicId, "products");
+        });
 
         const user = await UserModel.findById(product.owner);
 
@@ -182,11 +191,13 @@ export const rejectProduct = async (req: Request, res: Response, next: NextFunct
                 subject: "Từ chối sản phẩm!",
                 text: reason,
             },
-            function (err) {
+            async function (err) {
                 if (err) return next(new ResponseError(500));
+                await ProductModel.findByIdAndDelete(product.id);
                 transporter.close();
             }
         );
+
         return res.json({ message: MSG_REJECT_PRODUCT_SUCCESS });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
