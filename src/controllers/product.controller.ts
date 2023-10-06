@@ -46,7 +46,7 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
             limit: limit,
             sort,
         })
-            .populate("owner", "name avatar")
+            .populate("owner", "name avatar phone email birthday gender")
             .populate("sizeScreen", removeAttributePopulated)
             .populate("scanFrequency", removeAttributePopulated)
             .populate("resolutionScreen", removeAttributePopulated)
