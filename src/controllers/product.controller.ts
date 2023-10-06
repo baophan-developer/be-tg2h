@@ -46,6 +46,7 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
             limit: limit,
             sort,
         })
+            .populate("owner", "name avatar")
             .populate("sizeScreen", removeAttributePopulated)
             .populate("scanFrequency", removeAttributePopulated)
             .populate("resolutionScreen", removeAttributePopulated)
@@ -79,6 +80,7 @@ export const getDetailProduct = async (
     try {
         const { id } = req.params;
         const product = await ProductModel.findById(id)
+            .populate("owner", "name avatar")
             .populate("sizeScreen", removeAttributePopulated)
             .populate("scanFrequency", removeAttributePopulated)
             .populate("resolutionScreen", removeAttributePopulated)
@@ -134,8 +136,6 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
 
         if (images && images?.length === 0)
             throw new ResponseError(400, "Không thể upload hình ảnh");
-
-        console.log(images);
 
         const update = await ProductModel.findByIdAndUpdate(
             product.id,
@@ -193,10 +193,11 @@ export const rejectProduct = async (req: Request, res: Response, next: NextFunct
             },
             async function (err) {
                 if (err) return next(new ResponseError(500));
-                await ProductModel.findByIdAndDelete(product.id);
                 transporter.close();
             }
         );
+
+        await ProductModel.findByIdAndDelete(product.id);
 
         return res.json({ message: MSG_REJECT_PRODUCT_SUCCESS });
     } catch (error: any) {
