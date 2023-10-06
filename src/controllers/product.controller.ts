@@ -80,6 +80,7 @@ export const getDetailProduct = async (
     try {
         const { id } = req.params;
         const product = await ProductModel.findById(id)
+            .populate("owner", "name avatar phone email birthday gender")
             .populate("owner", "name avatar")
             .populate("sizeScreen", removeAttributePopulated)
             .populate("scanFrequency", removeAttributePopulated)
