@@ -63,8 +63,8 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
         return res.json({
             list: products,
             total: products.length,
-            page: pagination.page || defaultPage,
-            limit: pagination.limit || defaultLimit,
+            page: pagination?.page || defaultPage,
+            limit: pagination?.limit || defaultLimit,
         });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
