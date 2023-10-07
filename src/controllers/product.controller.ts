@@ -41,7 +41,7 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
         const limit = pagination?.limit || defaultLimit;
         const skip = pagination?.page * pagination?.limit || defaultPage;
 
-        const count = await ProductModel.find().count();
+        const count = await ProductModel.find(filters).count();
 
         const products = await ProductModel.find(filters, null, {
             skip: skip,
