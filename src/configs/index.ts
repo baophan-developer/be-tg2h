@@ -35,6 +35,9 @@ const configs = {
         apiKey: process.env.CLOUDINARY_KEY || "548534626599792",
         apiSecret: process.env.CLOUDINARY_SECRET || "_1s1wUgT6j4OksXEke3ON2nYOpg",
     },
+    defaultAvatar:
+        process.env.DEFAULT_AVATAR ||
+        "https://res.cloudinary.com/ddzf1nf7b/image/upload/v1696660756/avatar/vgamlzfpzywilindr4ug.png",
 };
 
 export default configs;
