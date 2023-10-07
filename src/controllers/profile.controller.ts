@@ -28,7 +28,7 @@ export const getProfile = async (req: Request, res: Response, next: NextFunction
         await ProductModel.find({});
         const user = await UserModel.findById(
             userId,
-            "-_id -__v -password -refreshToken -createdAt -updatedAt -role"
+            "-__v -password -refreshToken -createdAt -updatedAt -role"
         )
             .populate("address", "-__v")
             .populate("favorites")
