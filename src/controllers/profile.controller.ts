@@ -18,6 +18,7 @@ import {
 import { uploadHandler } from "../configs/upload.config";
 import { Schema } from "mongoose";
 import { destroyFile } from "../configs/cloudinary.config";
+import configs from "../configs";
 
 export const getProfile = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -91,11 +92,13 @@ export const updateAvatar = async (req: Request, res: Response, next: NextFuncti
         if (!user) throw new ResponseError(404, MSG_ERROR_ACCOUNT_NOT_EXISTED);
 
         const avatarOld = user.avatar;
-        const publicId = getPublicIdFile(avatarOld);
-        console.log(publicId);
 
-        // delete old file on cloudinary
-        await destroyFile(publicId, "avatar");
+        if (avatarOld && avatarOld !== configs.defaultAvatar) {
+            const publicId = getPublicIdFile(avatarOld);
+
+            // delete old file on cloudinary
+            await destroyFile(publicId, "avatar");
+        }
 
         const result = await uploadHandler(req, res);
 
