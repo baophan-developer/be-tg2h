@@ -136,17 +136,24 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
 
         const images = (await uploadMultipleHandler(req, res)) as [];
 
-        if (images && images?.length === 0)
-            throw new ResponseError(400, "Không thể upload hình ảnh");
+        if (!images) throw new ResponseError(400, "Không thể upload hình ảnh");
 
         const update = await ProductModel.findByIdAndUpdate(
             product.id,
             {
                 $set: { ...product },
-                $push: { images: { $each: images } },
             },
             { new: true, runValidators: true }
         );
+
+        await ProductModel.findByIdAndUpdate(
+            update?._id,
+            {
+                $push: { images: { $each: images } },
+            },
+            { new: true }
+        );
+
         if (!update) throw new ResponseError(400, MSG_UPDATE_PRODUCT_FAILED);
 
         return res.json({ message: MSG_UPDATE_PRODUCT_SUCCESS });
