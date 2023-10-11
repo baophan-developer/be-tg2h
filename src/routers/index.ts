@@ -17,6 +17,7 @@ import cpuRouters from "./cpu.routers";
 import resolutionScreenRouters from "./resolution-screen.routers";
 import productRouters from "./product.router";
 import userRouters from "./user.router";
+import discountRouters from "./discount.routers";
 
 const routers = express();
 
@@ -46,5 +47,7 @@ routers.use("/cpu", verifyToken, cpuRouters);
 routers.use("/product", verifyToken, productRouters);
 // User
 routers.use("/user", verifyToken, verifyAdmin, userRouters);
+// Discount
+routers.use("/discount", verifyToken, discountRouters);
 
 export default routers;

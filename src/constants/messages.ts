@@ -161,3 +161,6 @@ export const MSG_APPROVE_PRODUCT_SUCCESS = "Đã duyệt sản phẩm";
 export const MSG_REJECT_PRODUCT_SUCCESS = "Đã từ chối sản phẩm";
 
 export const MSG_PRODUCT_NOT_FOUND = "Không tìm thấy sản phẩm.";
+
+export const MSG_DISCOUNT_CREATE_SUCCESS = "Thêm mới mã giảm giá thành công.";
+export const MSG_DISCOUNT_UPDATE_SUCCESS = "Cập nhật mã giảm giá thành công.";
