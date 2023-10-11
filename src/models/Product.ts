@@ -27,6 +27,8 @@ export interface IProduct {
     os: Schema.Types.ObjectId;
     brand: Schema.Types.ObjectId;
     category: Schema.Types.ObjectId;
+    discount: Schema.Types.ObjectId;
+    sold: number;
     approve: boolean;
     status: boolean;
 }
@@ -146,6 +148,10 @@ const productSchema = new Schema<IProduct>({
         type: Schema.Types.ObjectId,
         ref: "Branch",
         required: [true, "Thông tin thương hiệu là bắt buộc."],
+    },
+    discount: {
+        type: Schema.Types.ObjectId,
+        ref: "Discount",
     },
     approve: {
         type: Boolean,

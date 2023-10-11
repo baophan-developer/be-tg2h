@@ -3,6 +3,8 @@ import DISCOUNT from "../constants/discount";
 
 export interface IDiscount {
     id: Schema.Types.ObjectId;
+    code: string;
+    productId: Schema.Types.ObjectId;
     start: Date;
     end: Date;
     amount: number;
@@ -12,6 +14,13 @@ export interface IDiscount {
 }
 
 const schemaDiscount = new Schema<IDiscount>({
+    code: {
+        type: String,
+        required: [true, "Mã giảm giá là bắt buộc."],
+        min: [DISCOUNT.MIN, "Mã giảm giá phải ít nhất {VALUE} ký tự."],
+        max: [DISCOUNT.MIN, "Mã giảm giá không được vượt {VALUE} ký tự."],
+        uppercase: true,
+    },
     start: {
         type: Date,
         required: [true, "Ngày bắt đầu giảm giá là bắt buộc."],
@@ -29,6 +38,10 @@ const schemaDiscount = new Schema<IDiscount>({
             DISCOUNT.MAX,
             `Số lượng phiếu giảm giá không được nhiều hơn {VALUE} phiếu.`,
         ],
+    },
+    productId: {
+        type: Schema.Types.ObjectId,
+        ref: "Product",
     },
     used: Number,
     status: Boolean,
