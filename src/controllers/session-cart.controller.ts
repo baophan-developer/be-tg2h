@@ -177,7 +177,12 @@ export const getMyCart = async (req: Request, res: Response, next: NextFunction)
             .populate("ownerProducts", "_id name avatar")
             .populate("items.product", "_id name images price newness")
             .exec();
-        return res.json({ list: cart });
+
+        let totalProductCart: number = 0;
+
+        cart.forEach((item) => (totalProductCart += item.items.length));
+
+        return res.json({ item: { list: cart, total: totalProductCart } });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
     }
