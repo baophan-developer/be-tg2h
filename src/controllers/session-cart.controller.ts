@@ -175,7 +175,7 @@ export const getMyCart = async (req: Request, res: Response, next: NextFunction)
         const { userId } = decodeToken(req);
         const cart = await SessionCartModel.find({ ownerCart: userId })
             .populate("ownerProducts", "_id name avatar")
-            .populate("items.product", "_id name images price newness")
+            .populate("items.product", "_id name images price newness owner")
             .exec();
 
         let totalProductCart: number = 0;
