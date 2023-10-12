@@ -18,6 +18,7 @@ import resolutionScreenRouters from "./resolution-screen.routers";
 import productRouters from "./product.router";
 import userRouters from "./user.router";
 import discountRouters from "./discount.routers";
+import sessionCartRouters from "./session-cart.routers";
 
 const routers = express();
 
@@ -49,5 +50,7 @@ routers.use("/product", verifyToken, productRouters);
 routers.use("/user", verifyToken, verifyAdmin, userRouters);
 // Discount
 routers.use("/discount", verifyToken, discountRouters);
+// Session cart
+routers.use("/session-cart", verifyToken, sessionCartRouters);
 
 export default routers;
