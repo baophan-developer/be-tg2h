@@ -178,3 +178,25 @@ export const MSG_SHIPPING_CREATE_SUCCESS = "Thêm mới vận chuyển thàn
 
 // Payment
 export const MSG_PAYMENT_CREATE_SUCCESS = "Thêm mới phương thức thanh toán thành công.";
+
+// Order
+export const MSG_ORDER_CREATE_SUCCESS = "Đặt hàng thành công.";
+export const MSG_ORDER_CREATE_FAILED = "Lỗi, không thể thực hiện đơn hàng.";
+export const MSG_ORDER_CANCEL = "Hủy đơn thành công.";
+
+export const MSG_ORDER_NOT_FOUND = "Không tìm thấy đơn hàng.";
+
+export const MSG_ORDER_CAN_NOT_CANCEL = "Lỗi, không thể hủy hơn.";
+
+export const MSG_ORDER_ACCEPT_SUCCESS = "Đã chấp nhận đơn hàng.";
+export const MSG_ORDER_CAN_NOT_ACCEPT = "Lỗi, không thể chấp nhận đơn.";
+
+export const MSG_ORDER_CANNOT_DELIVERY_ADDRESS = "Bạn chưa cung cấp địa chỉ nhận hàng.";
+export const MSG_ORDER_CANNOT_PICKUP_ADDRESS =
+    "Bạn chưa cung cấp địa chỉ lấy hàng cho nhân viên giao hàng.";
+
+export const MSG_ORDER_CAN_NOT_CHANGE_STATUS_SHIPPING =
+    "Không thể cập nhật trạng thái giao hàng cho đơn.";
+
+export const MSG_ORDER_CAN_NOT_CHANGE_STATUS_PAYMENT =
+    "Không thể cập nhật trạng thái thanh toán đơn.";
