@@ -170,3 +170,5 @@ export const MSG_SESSION_CART_REMOVE_SUCCESS =
     "Xóa sản phẩm ra khỏi giỏ hàng thành công.";
 export const MSG_ERROR_OWNER_CART =
     "Lỗi, bạn không thể thêm sản phẩm của mình vào giỏ hàng.";
+
+export const MSG_SHIPPING_CREATE_SUCCESS = "Thêm mới vận chuyển thành công.";
