@@ -166,6 +166,11 @@ export const MSG_PRODUCT_NOT_FOUND = "Không tìm thấy sản phẩm.";
 export const MSG_DISCOUNT_CREATE_SUCCESS = "Thêm mới mã giảm giá thành công.";
 export const MSG_DISCOUNT_UPDATE_SUCCESS = "Cập nhật mã giảm giá thành công.";
 
+export const MSG_DISCOUNT_APPLY_SUCCESS = "Áp dụng mã giảm giá thành công.";
+
+export const MSG_DISCOUNT_NOT_FOUND = "Mã giảm giá không tồn tại.";
+export const MSG_DISCOUNT_NOT_USE = "Lỗi, không thể sử dụng mã giảm giá.";
+
 // Session cart
 export const MSG_SESSION_CART_ADD_SUCCESS = "Thêm sản phẩm vào giỏ hàng thành công.";
 export const MSG_SESSION_CART_REMOVE_SUCCESS =

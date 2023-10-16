@@ -14,10 +14,11 @@ import {
     MSG_ORDER_CREATE_SUCCESS,
     MSG_ORDER_NOT_FOUND,
 } from "../constants/messages";
-import ProductModel from "../models/Product";
-import DiscountModel from "../models/Discount";
+import { IProduct } from "../models/Product";
+import DiscountModel, { IDiscount } from "../models/Discount";
 import { Schema } from "mongoose";
 import { EOrder, EStatusShipping } from "../enums/order.enum";
+import SessionCartModel from "../models/SessionCart";
 
 interface IOderFiler {
     filter: {
@@ -44,52 +45,51 @@ export const getOrders = async (req: Request, res: Response, next: NextFunction)
     }
 };
 
+interface ICalculatorOrder {
+    product: IProduct;
+    discount: IDiscount | undefined;
+    quantity: number;
+}
+
 export const calculatorOrderPayment = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
     try {
-        const { items } = req.body as IOrder;
+        const { items } = req.body as { items: ICalculatorOrder[] };
 
         let totalPayment = 0;
 
-        async function main() {
-            await Promise.all(
-                items.map(async function (item) {
-                    const product = await ProductModel.findById(item.product);
-                    const discount = await DiscountModel.findById(item.discount);
+        /** new items using for render order in fe */
+        const newItems = items.map((item) => {
+            let price: number = 0;
 
-                    let price = product?.price;
+            if (item.discount) {
+                price =
+                    (item.product.price -
+                        (item.product.price / 100) * item.discount.percent) *
+                    item.quantity;
 
-                    if (product) {
-                        if (discount) {
-                            price =
-                                product?.price -
-                                (product?.price / 100) * discount.percent;
-                            totalPayment += price * item.quantity;
-                        } else {
-                            totalPayment += product.price * item.quantity;
-                            price = product.price * item.quantity;
-                        }
-                    }
+                totalPayment += price;
+            }
 
-                    return {
-                        product: item.product,
-                        discount: item.discount,
-                        quantity: item.quantity,
-                        price: price,
-                    };
-                })
-            );
-        }
-        await main();
+            if (!item.discount) {
+                price = item.product.price * item.quantity;
+                totalPayment += price;
+            }
+
+            return {
+                product: item.product,
+                discount: item.discount,
+                quantity: item.quantity,
+                price: price,
+            };
+        });
 
         return res.json({
-            item: {
-                items: items,
-                totalPayment: totalPayment,
-            },
+            items: newItems,
+            totalPayment: totalPayment,
         });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
@@ -100,6 +100,7 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
     try {
         const { userId } = decodeToken(req);
         const {
+            cartId,
             seller,
             shipping,
             payment,
@@ -107,7 +108,7 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
             statusPayment,
             totalPayment,
             deliveryAddress,
-        } = req.body as IOrder;
+        } = req.body as any;
 
         if (!deliveryAddress)
             throw new ResponseError(400, MSG_ORDER_CANNOT_DELIVERY_ADDRESS);
@@ -125,8 +126,11 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
 
         if (!order) throw new ResponseError(400, MSG_ORDER_CREATE_FAILED);
 
+        // remove cart
+        await SessionCartModel.findByIdAndDelete(cartId);
+
         // Decrease discount have in order
-        items.forEach(async (item) => {
+        items.forEach(async (item: any) => {
             await DiscountModel.findByIdAndUpdate(item.discount, {
                 $inc: { amount: -1 },
             });

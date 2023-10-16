@@ -3,7 +3,10 @@ import ProductModel from "../models/Product";
 import DiscountModel, { IDiscount } from "../models/Discount";
 import ResponseError from "../utils/error-api";
 import {
+    MSG_DISCOUNT_APPLY_SUCCESS,
     MSG_DISCOUNT_CREATE_SUCCESS,
+    MSG_DISCOUNT_NOT_FOUND,
+    MSG_DISCOUNT_NOT_USE,
     MSG_DISCOUNT_UPDATE_SUCCESS,
 } from "../constants/messages";
 import handleError from "../utils/handle-error";
@@ -66,6 +69,33 @@ export const updateDiscount = async (req: Request, res: Response, next: NextFunc
         );
 
         return res.json({ message: MSG_DISCOUNT_UPDATE_SUCCESS });
+    } catch (error: any) {
+        return next(new ResponseError(error.status, error.message));
+    }
+};
+
+export const useDiscount = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { code } = req.body as { code: string };
+
+        const discount = await DiscountModel.findOne({ code: code }).exec();
+
+        const date = new Date();
+
+        if (!discount || code !== discount.code)
+            throw new ResponseError(404, MSG_DISCOUNT_NOT_FOUND);
+
+        if (discount.amount === 0) throw new ResponseError(404, MSG_DISCOUNT_NOT_USE);
+
+        if (discount.end.getTime() < date.getTime())
+            throw new ResponseError(404, "Lỗi, mã giảm giá không còn hiệu lực");
+
+        if (discount.start.getTime() > date.getTime())
+            throw new ResponseError(404, MSG_DISCOUNT_NOT_USE);
+
+        if (!discount.status) throw new ResponseError(404, MSG_DISCOUNT_NOT_USE);
+
+        return res.json({ message: MSG_DISCOUNT_APPLY_SUCCESS });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
     }
