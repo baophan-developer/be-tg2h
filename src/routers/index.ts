@@ -19,6 +19,9 @@ import productRouters from "./product.router";
 import userRouters from "./user.router";
 import discountRouters from "./discount.routers";
 import sessionCartRouters from "./session-cart.routers";
+import shippingRouters from "./shipping.router";
+import paymentRouters from "./payment.routers";
+import orderRouters from "./order.router";
 
 const routers = express();
 
@@ -52,5 +55,11 @@ routers.use("/user", verifyToken, verifyAdmin, userRouters);
 routers.use("/discount", verifyToken, discountRouters);
 // Session cart
 routers.use("/session-cart", verifyToken, sessionCartRouters);
+// Shipping
+routers.use("/shipping", verifyToken, shippingRouters);
+// Payment
+routers.use("/payment", verifyToken, paymentRouters);
+// Order
+routers.use("/order", verifyToken, orderRouters);
 
 export default routers;

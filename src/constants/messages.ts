@@ -162,11 +162,46 @@ export const MSG_REJECT_PRODUCT_SUCCESS = "Đã từ chối sản phẩm";
 
 export const MSG_PRODUCT_NOT_FOUND = "Không tìm thấy sản phẩm.";
 
+// Discount
 export const MSG_DISCOUNT_CREATE_SUCCESS = "Thêm mới mã giảm giá thành công.";
 export const MSG_DISCOUNT_UPDATE_SUCCESS = "Cập nhật mã giảm giá thành công.";
 
+export const MSG_DISCOUNT_APPLY_SUCCESS = "Áp dụng mã giảm giá thành công.";
+
+export const MSG_DISCOUNT_NOT_FOUND = "Mã giảm giá không tồn tại.";
+export const MSG_DISCOUNT_NOT_USE = "Lỗi, không thể sử dụng mã giảm giá.";
+
+// Session cart
 export const MSG_SESSION_CART_ADD_SUCCESS = "Thêm sản phẩm vào giỏ hàng thành công.";
 export const MSG_SESSION_CART_REMOVE_SUCCESS =
     "Xóa sản phẩm ra khỏi giỏ hàng thành công.";
 export const MSG_ERROR_OWNER_CART =
     "Lỗi, bạn không thể thêm sản phẩm của mình vào giỏ hàng.";
+
+// Shipping
+export const MSG_SHIPPING_CREATE_SUCCESS = "Thêm mới vận chuyển thành công.";
+
+// Payment
+export const MSG_PAYMENT_CREATE_SUCCESS = "Thêm mới phương thức thanh toán thành công.";
+
+// Order
+export const MSG_ORDER_CREATE_SUCCESS = "Đặt hàng thành công.";
+export const MSG_ORDER_CREATE_FAILED = "Lỗi, không thể thực hiện đơn hàng.";
+export const MSG_ORDER_CANCEL = "Hủy đơn thành công.";
+
+export const MSG_ORDER_NOT_FOUND = "Không tìm thấy đơn hàng.";
+
+export const MSG_ORDER_CAN_NOT_CANCEL = "Lỗi, không thể hủy hơn.";
+
+export const MSG_ORDER_ACCEPT_SUCCESS = "Đã chấp nhận đơn hàng.";
+export const MSG_ORDER_CAN_NOT_ACCEPT = "Lỗi, không thể chấp nhận đơn.";
+
+export const MSG_ORDER_CANNOT_DELIVERY_ADDRESS = "Bạn chưa cung cấp địa chỉ nhận hàng.";
+export const MSG_ORDER_CANNOT_PICKUP_ADDRESS =
+    "Bạn chưa cung cấp địa chỉ lấy hàng cho nhân viên giao hàng.";
+
+export const MSG_ORDER_CAN_NOT_CHANGE_STATUS_SHIPPING =
+    "Không thể cập nhật trạng thái giao hàng cho đơn.";
+
+export const MSG_ORDER_CAN_NOT_CHANGE_STATUS_PAYMENT =
+    "Không thể cập nhật trạng thái thanh toán đơn.";

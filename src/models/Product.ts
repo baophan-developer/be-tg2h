@@ -161,6 +161,10 @@ const productSchema = new Schema<IProduct>({
         type: Boolean,
         required: [true, "Trạng thái sản phẩm là bắt buộc."],
     },
+    sold: {
+        type: Number,
+        default: 0,
+    },
 });
 
 const ProductModel = model<IProduct>("Product", productSchema);
