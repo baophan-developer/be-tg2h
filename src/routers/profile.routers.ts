@@ -2,6 +2,7 @@ import express, { Router } from "express";
 import { uploadMemories } from "../configs/upload.config";
 import {
     addAddressUser,
+    chooseAddressIsMain,
     editAddressUser,
     getProfile,
     removeAddressUser,
@@ -17,5 +18,6 @@ profileRouters.put("/update-avatar", uploadMemories.single("avatar"), updateAvat
 profileRouters.post("/create-address", addAddressUser);
 profileRouters.put("/update-address", editAddressUser);
 profileRouters.delete("/delete-address/:id", removeAddressUser);
+profileRouters.post("/choose-address-is-main", chooseAddressIsMain);
 
 export default profileRouters;

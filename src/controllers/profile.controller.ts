@@ -9,6 +9,7 @@ import AddressModel, { IAdress } from "../models/Address";
 import ProductModel from "../models/Product";
 import {
     MSG_ADD_ADDRESS_SUCCESS,
+    MSG_CHOOSE_ADDRESS_IS_MAIN_SUCCESS,
     MSG_ERROR_ACCOUNT_NOT_EXISTED,
     MSG_ERROR_GET_PROFILE_FAILED,
     MSG_REMOVE_ADDRESS_SUCCESS,
@@ -195,6 +196,42 @@ export const removeAddressUser = async (
     } catch (error: ResponseError | any) {
         const { status, message } = handleError(error);
         return next(new ResponseError(status, message));
+    }
+};
+
+export const chooseAddressIsMain = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { addressId } = req.body;
+        const { userId } = decodeToken(req);
+
+        const user = await UserModel.findById(userId);
+
+        // await AddressModel.updateMany({})
+        await AddressModel.updateMany(
+            { _id: { $in: user?.address } },
+            {
+                $set: { main: false },
+            }
+        );
+
+        // update address is main
+        await AddressModel.findByIdAndUpdate(
+            addressId,
+            {
+                $set: {
+                    main: true,
+                },
+            },
+            { new: true }
+        );
+
+        res.json({ message: MSG_CHOOSE_ADDRESS_IS_MAIN_SUCCESS });
+    } catch (error: any) {
+        return next(new ResponseError(error.status, error.message));
     }
 };
 
