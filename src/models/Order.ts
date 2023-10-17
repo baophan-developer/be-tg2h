@@ -56,9 +56,11 @@ const schemaOrder = new Schema<IOrder>({
     },
     deliveryAddress: {
         type: String,
+        required: true,
     },
     pickupAddress: {
         type: String,
+        required: true,
     },
     items: [
         {

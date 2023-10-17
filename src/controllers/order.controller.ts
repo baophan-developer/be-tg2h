@@ -6,7 +6,6 @@ import {
     MSG_ORDER_ACCEPT_SUCCESS,
     MSG_ORDER_CANCEL,
     MSG_ORDER_CANNOT_DELIVERY_ADDRESS,
-    MSG_ORDER_CANNOT_PICKUP_ADDRESS,
     MSG_ORDER_CAN_NOT_ACCEPT,
     MSG_ORDER_CAN_NOT_CANCEL,
     MSG_ORDER_CAN_NOT_CHANGE_STATUS_SHIPPING,
@@ -108,6 +107,7 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
             statusPayment,
             totalPayment,
             deliveryAddress,
+            pickupAddress,
         } = req.body as any;
 
         if (!deliveryAddress)
@@ -122,6 +122,7 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
             statusPayment: statusPayment,
             totalPayment: totalPayment,
             deliveryAddress: deliveryAddress,
+            pickupAddress: pickupAddress,
         });
 
         if (!order) throw new ResponseError(400, MSG_ORDER_CREATE_FAILED);
