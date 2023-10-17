@@ -174,7 +174,15 @@ export const getMyCart = async (req: Request, res: Response, next: NextFunction)
     try {
         const { userId } = decodeToken(req);
         const cart = await SessionCartModel.find({ ownerCart: userId })
-            .populate("ownerProducts", "_id name avatar")
+            .populate({
+                path: "ownerProducts",
+                select: "_id name avatar address",
+                populate: {
+                    path: "address",
+                    select: "street address",
+                    match: { main: true },
+                },
+            })
             .populate({
                 path: "items.product",
                 select: "_id name images price newness owner discount",

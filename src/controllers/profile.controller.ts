@@ -129,11 +129,24 @@ export const addAddressUser = async (req: Request, res: Response, next: NextFunc
             street: street,
         });
 
-        await UserModel.findByIdAndUpdate(
+        const user = await UserModel.findByIdAndUpdate(
             userId,
             { $push: { address: [addressSave._id] } },
             { new: true }
         );
+
+        if (!user) throw new ResponseError(400, "Không thể thêm address");
+
+        if (user.address.length === 1) {
+            await AddressModel.findByIdAndUpdate(
+                user.address[0],
+                {
+                    $set: { main: true },
+                },
+                { new: true }
+            );
+        }
+
         return res.json({ message: MSG_ADD_ADDRESS_SUCCESS });
     } catch (error: ResponseError | any) {
         const { status, message } = handleError(error);
@@ -184,11 +197,23 @@ export const removeAddressUser = async (
         const { id } = req.params as { id: string };
         const { userId } = decodeToken(req);
 
-        await UserModel.findByIdAndUpdate(
+        const user = await UserModel.findByIdAndUpdate(
             userId,
             { $pull: { address: id } },
             { new: true }
         );
+
+        if (!user) throw new ResponseError(400, "Không thể xóa địa chỉ");
+
+        if (user.address.length === 1) {
+            await AddressModel.findByIdAndUpdate(
+                user.address[0],
+                {
+                    $set: { main: true },
+                },
+                { new: true }
+            );
+        }
 
         await AddressModel.findByIdAndDelete(id);
 
