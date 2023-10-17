@@ -28,6 +28,7 @@ export interface IProduct {
     brand: Schema.Types.ObjectId;
     category: Schema.Types.ObjectId;
     discount: Schema.Types.ObjectId;
+    addressPickupProduct: string;
     sold: number;
     approve: boolean;
     status: boolean;
@@ -164,6 +165,10 @@ const productSchema = new Schema<IProduct>({
     sold: {
         type: Number,
         default: 0,
+    },
+    addressPickupProduct: {
+        type: String,
+        required: [true, "Địa chỉ lấy hàng là cần thiết."],
     },
 });
 

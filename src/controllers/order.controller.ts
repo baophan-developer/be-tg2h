@@ -167,7 +167,7 @@ export const cancelOrder = async (req: Request, res: Response, next: NextFunctio
 
 export const acceptOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { orderId, pickupAddress } = req.body;
+        const { orderId } = req.body;
 
         const order = await OrderModel.findById(orderId).exec();
 
