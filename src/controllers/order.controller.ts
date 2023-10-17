@@ -14,7 +14,7 @@ import {
     MSG_ORDER_CREATE_SUCCESS,
     MSG_ORDER_NOT_FOUND,
 } from "../constants/messages";
-import { IProduct } from "../models/Product";
+import ProductModel, { IProduct } from "../models/Product";
 import DiscountModel, { IDiscount } from "../models/Discount";
 import { Schema } from "mongoose";
 import { EOrder, EStatusShipping } from "../enums/order.enum";
@@ -131,9 +131,9 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
 
         // Decrease discount have in order
         items.forEach(async (item: any) => {
-            await DiscountModel.findByIdAndUpdate(item.discount, {
+            await DiscountModel.findByIdAndUpdate(item.discount?._id, {
                 $inc: { amount: -1 },
-            });
+            }).exec();
         });
 
         return res.json({ message: MSG_ORDER_CREATE_SUCCESS });
@@ -173,8 +173,6 @@ export const acceptOrder = async (req: Request, res: Response, next: NextFunctio
 
         if (!order) throw new ResponseError(404, MSG_ORDER_NOT_FOUND);
 
-        if (!pickupAddress) throw new ResponseError(400, MSG_ORDER_CANNOT_PICKUP_ADDRESS);
-
         if (order.statusOrder === EOrder.CANCEL)
             throw new ResponseError(400, MSG_ORDER_CAN_NOT_ACCEPT);
 
@@ -185,6 +183,13 @@ export const acceptOrder = async (req: Request, res: Response, next: NextFunctio
             },
             { new: true, runValidators: true }
         );
+
+        // Increase sold product in items
+        order.items.forEach(async (item: any) => {
+            await ProductModel.findByIdAndUpdate(item.product, {
+                $inc: { sold: item.quantity },
+            }).exec();
+        });
 
         return res.json({ message: MSG_ORDER_ACCEPT_SUCCESS });
     } catch (error: any) {

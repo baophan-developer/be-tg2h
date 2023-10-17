@@ -11,7 +11,10 @@ export interface IOrder {
     deliveryAddress: string;
     items: {
         product: Schema.Types.ObjectId;
-        discount: Schema.Types.ObjectId;
+        discount: {
+            code: string;
+            percent: number;
+        };
         quantity: number;
         price: number;
     }[];
@@ -64,8 +67,8 @@ const schemaOrder = new Schema<IOrder>({
                 ref: "Product",
             },
             discount: {
-                type: Schema.Types.ObjectId,
-                ref: "Discount",
+                code: String,
+                percent: Number,
             },
             quantity: Number,
             price: Number,
