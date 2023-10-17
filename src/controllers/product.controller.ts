@@ -105,6 +105,16 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
     try {
         const productInfo = req.body as IProduct;
         const { userId } = decodeToken(req);
+        const user = await UserModel.findById(userId);
+
+        if (!user) throw new ResponseError(400, "Không thể thêm sản phẩm.");
+
+        if (user.address.length === 0)
+            throw new ResponseError(
+                400,
+                "Bạn phải có ít nhất một địa chỉ làm địa chỉ chính cho người giao hàng nhận hàng."
+            );
+
         const images = (await uploadMultipleHandler(req, res)) as [];
 
         if (images && images?.length === 0)
