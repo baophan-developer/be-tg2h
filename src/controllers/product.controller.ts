@@ -94,7 +94,9 @@ export const getDetailProduct = async (
             .populate("cpu", removeAttributePopulated)
             .populate("os", removeAttributePopulated)
             .populate("category", removeAttributePopulated)
-            .populate("brand", removeAttributePopulated);
+            .populate("brand", removeAttributePopulated)
+            .populate("discount", removeAttributePopulated)
+            .exec();
         return res.json({ item: product });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
