@@ -18,7 +18,7 @@ export interface IUser {
     refreshToken: string;
     name: string;
     avatar: string;
-    address: Schema.Types.ObjectId;
+    address: Schema.Types.ObjectId[];
     phone: string;
     gender: boolean;
     birthday: Date;

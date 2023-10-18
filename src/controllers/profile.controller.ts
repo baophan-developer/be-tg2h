@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response, request } from "express";
 import ResponseError from "../utils/error-api";
 import handleError from "../utils/handle-error";
 import decodeToken from "../utils/decode-token";
@@ -9,6 +9,7 @@ import AddressModel, { IAdress } from "../models/Address";
 import ProductModel from "../models/Product";
 import {
     MSG_ADD_ADDRESS_SUCCESS,
+    MSG_CHOOSE_ADDRESS_IS_MAIN_SUCCESS,
     MSG_ERROR_ACCOUNT_NOT_EXISTED,
     MSG_ERROR_GET_PROFILE_FAILED,
     MSG_REMOVE_ADDRESS_SUCCESS,
@@ -128,11 +129,24 @@ export const addAddressUser = async (req: Request, res: Response, next: NextFunc
             street: street,
         });
 
-        await UserModel.findByIdAndUpdate(
+        const user = await UserModel.findByIdAndUpdate(
             userId,
             { $push: { address: [addressSave._id] } },
             { new: true }
         );
+
+        if (!user) throw new ResponseError(400, "Không thể thêm address");
+
+        if (user.address.length === 1) {
+            await AddressModel.findByIdAndUpdate(
+                user.address[0],
+                {
+                    $set: { main: true },
+                },
+                { new: true }
+            );
+        }
+
         return res.json({ message: MSG_ADD_ADDRESS_SUCCESS });
     } catch (error: ResponseError | any) {
         const { status, message } = handleError(error);
@@ -183,11 +197,28 @@ export const removeAddressUser = async (
         const { id } = req.params as { id: string };
         const { userId } = decodeToken(req);
 
+        const user = await UserModel.findById(userId);
+
+        if (user?.address.length === 1)
+            throw new ResponseError(400, "Phải có ít nhất một địa chỉ.");
+
         await UserModel.findByIdAndUpdate(
             userId,
             { $pull: { address: id } },
             { new: true }
         );
+
+        if (!user) throw new ResponseError(400, "Không thể xóa địa chỉ");
+
+        if (user.address.length === 1) {
+            await AddressModel.findByIdAndUpdate(
+                user.address[0],
+                {
+                    $set: { main: true },
+                },
+                { new: true }
+            );
+        }
 
         await AddressModel.findByIdAndDelete(id);
 
@@ -195,6 +226,42 @@ export const removeAddressUser = async (
     } catch (error: ResponseError | any) {
         const { status, message } = handleError(error);
         return next(new ResponseError(status, message));
+    }
+};
+
+export const chooseAddressIsMain = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { addressId } = req.body;
+        const { userId } = decodeToken(req);
+
+        const user = await UserModel.findById(userId);
+
+        // await AddressModel.updateMany({})
+        await AddressModel.updateMany(
+            { _id: { $in: user?.address } },
+            {
+                $set: { main: false },
+            }
+        );
+
+        // update address is main
+        await AddressModel.findByIdAndUpdate(
+            addressId,
+            {
+                $set: {
+                    main: true,
+                },
+            },
+            { new: true }
+        );
+
+        res.json({ message: MSG_CHOOSE_ADDRESS_IS_MAIN_SUCCESS });
+    } catch (error: any) {
+        return next(new ResponseError(error.status, error.message));
     }
 };
 

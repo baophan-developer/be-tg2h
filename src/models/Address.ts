@@ -6,6 +6,7 @@ export interface IAdress {
     wardId: number;
     street: String;
     address: string;
+    main: boolean;
 }
 
 const addressSchema = new Schema<IAdress>({
@@ -14,6 +15,7 @@ const addressSchema = new Schema<IAdress>({
     wardId: { type: Number, required: [true, "Xã/phường là bắt buộc."] },
     street: { type: String, default: "" },
     address: { type: String, default: "" },
+    main: { type: Boolean, default: false },
 });
 
 const AddressModel = model<IAdress>("Address", addressSchema);
