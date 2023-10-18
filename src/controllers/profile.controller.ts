@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response, request } from "express";
 import ResponseError from "../utils/error-api";
 import handleError from "../utils/handle-error";
 import decodeToken from "../utils/decode-token";
@@ -197,7 +197,12 @@ export const removeAddressUser = async (
         const { id } = req.params as { id: string };
         const { userId } = decodeToken(req);
 
-        const user = await UserModel.findByIdAndUpdate(
+        const user = await UserModel.findById(userId);
+
+        if (user?.address.length === 1)
+            throw new ResponseError(400, "Phải có ít nhất một địa chỉ.");
+
+        await UserModel.findByIdAndUpdate(
             userId,
             { $pull: { address: id } },
             { new: true }
