@@ -52,12 +52,13 @@ export const createDiscount = async (req: Request, res: Response, next: NextFunc
 
 export const updateDiscount = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { id, start, end, percent, amount, status } = req.body as IDiscount;
+        const { id, code, start, end, percent, amount, status } = req.body as IDiscount;
 
         await DiscountModel.findByIdAndUpdate(
             id,
             {
                 $set: {
+                    code: code,
                     start: start,
                     end: end,
                     percent: percent,
@@ -69,6 +70,27 @@ export const updateDiscount = async (req: Request, res: Response, next: NextFunc
         );
 
         return res.json({ message: MSG_DISCOUNT_UPDATE_SUCCESS });
+    } catch (error: any) {
+        return next(new ResponseError(error.status, error.message));
+    }
+};
+
+export const removeDiscount = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { productId, discountId } = req.body;
+
+        const discount = await DiscountModel.findByIdAndDelete(discountId);
+
+        if (!discount) throw new ResponseError(422, "Không thể xóa mã giảm giá.");
+
+        await ProductModel.findByIdAndUpdate(
+            productId,
+            {
+                $set: { discount: null },
+            },
+            { new: true }
+        );
+        return res.json({ message: "Xóa mã giảm giá thành công." });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
     }
