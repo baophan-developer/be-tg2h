@@ -27,7 +27,7 @@ export interface IOrder {
         | EStatusShipping.DELIVER_RECEIVE_ITEM
         | EStatusShipping.DELIVERING
         | EStatusShipping.DELIVERED;
-    statusOrder: EOrder.ORDERED | EOrder.CANCEL | EOrder.FINISH;
+    statusOrder: EOrder.ORDERED | EOrder.CANCEL | EOrder.FINISH | EOrder.DELIVERING;
     reasonCancel: string;
     /** status is status order wait seller accept order */
     status: boolean;
@@ -87,6 +87,7 @@ const schemaOrder = new Schema<IOrder>({
     statusShipping: {
         type: String,
         enum: [
+            EStatusShipping.CANCEL,
             EStatusShipping.PENDING,
             EStatusShipping.PREPARING,
             EStatusShipping.IN_STORE,
@@ -98,16 +99,12 @@ const schemaOrder = new Schema<IOrder>({
     },
     statusOrder: {
         type: String,
-        enum: [EOrder.CANCEL, EOrder.FINISH, EOrder.ORDERED],
+        enum: [EOrder.CANCEL, EOrder.FINISH, EOrder.ORDERED, EOrder.DELIVERING],
         default: EOrder.ORDERED,
     },
     reasonCancel: {
         type: String,
         default: "",
-    },
-    status: {
-        type: Boolean,
-        default: false,
     },
 });
 

@@ -32,10 +32,10 @@ export const getOrders = async (req: Request, res: Response, next: NextFunction)
 
         const orders = await OrderModel.find(filter)
             .populate("seller", "name avatar")
+            .populate("owner", "name avatar")
             .populate("shipping", "name avatar")
             .populate("payment", "name avatar")
             .populate("items.product", "name images price")
-            .populate("items.discount", "code percent")
             .exec();
 
         return res.json({ list: orders });
@@ -145,17 +145,19 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
 
 export const cancelOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { orderId, reasonCancel } = req.body;
+        const { id, reasonCancel } = req.body;
 
-        const order = await OrderModel.findById(orderId);
+        const order = await OrderModel.findById(id);
 
         if (!order) throw new ResponseError(404, MSG_ORDER_NOT_FOUND);
 
-        if (order.status === true) throw new ResponseError(400, MSG_ORDER_CAN_NOT_CANCEL);
+        if (!(order.statusOrder === EOrder.ORDERED))
+            throw new ResponseError(400, MSG_ORDER_CAN_NOT_CANCEL);
 
-        await OrderModel.findByIdAndUpdate(orderId, {
+        await OrderModel.findByIdAndUpdate(id, {
             $set: {
                 statusOrder: EOrder.CANCEL,
+                statusShipping: EStatusShipping.CANCEL,
                 reasonCancel: reasonCancel,
             },
         });
@@ -180,7 +182,10 @@ export const acceptOrder = async (req: Request, res: Response, next: NextFunctio
         await OrderModel.findByIdAndUpdate(
             orderId,
             {
-                $set: { status: true, statusShipping: EStatusShipping.PREPARING },
+                $set: {
+                    statusShipping: EStatusShipping.PREPARING,
+                    statusOrder: EOrder.DELIVERING,
+                },
             },
             { new: true, runValidators: true }
         );
@@ -205,20 +210,6 @@ export const changeStatusShipping = async (
     next: NextFunction
 ) => {
     try {
-        const { orderId, status } = req.body;
-
-        const order = await OrderModel.findById(orderId).exec();
-
-        if (order?.status === false)
-            throw new ResponseError(400, MSG_ORDER_CAN_NOT_CHANGE_STATUS_SHIPPING);
-
-        await OrderModel.findByIdAndUpdate(
-            orderId,
-            {
-                $set: { statusShipping: status },
-            },
-            { new: true, runValidators: true }
-        );
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
     }
@@ -231,20 +222,6 @@ export const changeStatusPayment = async (
     next: NextFunction
 ) => {
     try {
-        const { orderId } = req.body;
-
-        const order = await OrderModel.findById(orderId).exec();
-
-        if (order?.status === false)
-            throw new ResponseError(400, MSG_ORDER_CAN_NOT_CHANGE_STATUS_SHIPPING);
-
-        await OrderModel.findByIdAndUpdate(
-            orderId,
-            {
-                $set: { statusPayment: true },
-            },
-            { new: true, runValidators: true }
-        );
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
     }
