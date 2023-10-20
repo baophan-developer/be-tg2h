@@ -22,6 +22,7 @@ import sessionCartRouters from "./session-cart.routers";
 import shippingRouters from "./shipping.router";
 import paymentRouters from "./payment.routers";
 import orderRouters from "./order.router";
+import commentRouters from "./comment.router";
 
 const routers = express();
 
@@ -61,5 +62,7 @@ routers.use("/shipping", verifyToken, shippingRouters);
 routers.use("/payment", verifyToken, paymentRouters);
 // Order
 routers.use("/order", verifyToken, orderRouters);
+// Comment
+routers.use("/comment", verifyToken, commentRouters);
 
 export default routers;
