@@ -95,12 +95,15 @@ export const deleteComment = async (req: Request, res: Response, next: NextFunct
 
         comments.forEach((item) => (totalRating += item.rating));
 
-        rating = totalRating / comments.length;
+        if (totalRating !== 0) rating = totalRating / comments.length;
+
+        if (totalRating === 0) rating = 0;
 
         await ProductModel.findByIdAndUpdate(
             productId,
             {
                 $set: { rating: rating },
+                $inc: { reviews: -1 },
             },
             { new: true }
         ).exec();
