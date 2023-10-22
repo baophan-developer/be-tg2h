@@ -31,6 +31,8 @@ export interface IProduct {
     sold: number;
     approve: boolean;
     status: boolean;
+    reviews: number;
+    rating: number;
 }
 
 const productSchema = new Schema<IProduct>({
@@ -162,6 +164,14 @@ const productSchema = new Schema<IProduct>({
         required: [true, "Trạng thái sản phẩm là bắt buộc."],
     },
     sold: {
+        type: Number,
+        default: 0,
+    },
+    reviews: {
+        type: Number,
+        default: 0,
+    },
+    rating: {
         type: Number,
         default: 0,
     },

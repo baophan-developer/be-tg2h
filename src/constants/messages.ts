@@ -207,3 +207,9 @@ export const MSG_ORDER_CAN_NOT_CHANGE_STATUS_SHIPPING =
 
 export const MSG_ORDER_CAN_NOT_CHANGE_STATUS_PAYMENT =
     "Không thể cập nhật trạng thái thanh toán đơn.";
+
+// Comment
+export const MSG_CREATE_COMMENT_SUCCESS = "Thêm đánh giá thành công.";
+export const MSG_CREATE_COMMENT_FAILED = "Thêm đánh giá thất bại.";
+
+export const MSG_DELETE_COMMENT_SUCCESS = "Xóa đánh giá thành công.";
