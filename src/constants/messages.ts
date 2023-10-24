@@ -190,6 +190,7 @@ export const MSG_PAYMENT_CREATE_SUCCESS = "Thêm mới phương thức thanh t
 export const MSG_ORDER_CREATE_SUCCESS = "Đặt hàng thành công.";
 export const MSG_ORDER_CREATE_FAILED = "Lỗi, không thể thực hiện đơn hàng.";
 export const MSG_ORDER_CANCEL = "Hủy đơn thành công.";
+export const MSG_ORDER_REQUEST_REFUND = "Bạn đã gửi yêu cầu hoàn trả.";
 
 export const MSG_ORDER_NOT_FOUND = "Không tìm thấy đơn hàng.";
 

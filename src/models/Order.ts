@@ -31,6 +31,7 @@ export interface IOrder {
     reasonCancel: string;
     /** status is status order wait seller accept order */
     status: boolean;
+    refund: boolean;
 }
 
 const schemaOrder = new Schema<IOrder>({
@@ -105,6 +106,9 @@ const schemaOrder = new Schema<IOrder>({
     reasonCancel: {
         type: String,
         default: "",
+    },
+    refund: {
+        type: Boolean,
     },
 });
 
