@@ -269,10 +269,40 @@ export const addProductToFavorites = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => {};
+) => {
+    try {
+        const { userId } = decodeToken(req);
+        const { product } = req.body;
+
+        await UserModel.findByIdAndUpdate(userId, {
+            $push: {
+                favorites: product,
+            },
+        });
+
+        return res.json({ message: "Đã thêm vào danh sách yêu thích." });
+    } catch (error: any) {
+        return next(new ResponseError(error.status, error.message));
+    }
+};
 
 export const removeProductToFavorites = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => {};
+) => {
+    try {
+        const { userId } = decodeToken(req);
+        const { product } = req.body;
+
+        await UserModel.findByIdAndUpdate(userId, {
+            $pull: {
+                favorites: { $in: [product] },
+            },
+        });
+
+        return res.json({ message: "Đã xóa khỏi yêu thích." });
+    } catch (error: any) {
+        return next(new ResponseError(error.status, error.message));
+    }
+};
