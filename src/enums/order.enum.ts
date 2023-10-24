@@ -13,4 +13,5 @@ export enum EOrder {
     CANCEL = "Đã hủy",
     DELIVERING = "Đang vận chuyển",
     FINISH = "Hoàn thành",
+    REQUEST_REFUND = "Yêu cầu hoàn tiền",
 }
