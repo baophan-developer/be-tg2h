@@ -27,7 +27,12 @@ export interface IOrder {
         | EStatusShipping.DELIVER_RECEIVE_ITEM
         | EStatusShipping.DELIVERING
         | EStatusShipping.DELIVERED;
-    statusOrder: EOrder.ORDERED | EOrder.CANCEL | EOrder.FINISH | EOrder.DELIVERING;
+    statusOrder:
+        | EOrder.ORDERED
+        | EOrder.CANCEL
+        | EOrder.FINISH
+        | EOrder.DELIVERING
+        | EOrder.REQUEST_REFUND;
     reasonCancel: string;
     /** status is status order wait seller accept order */
     status: boolean;

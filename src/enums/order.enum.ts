@@ -9,8 +9,8 @@ export enum EStatusShipping {
 }
 
 export enum EOrder {
-    ORDERED = "Đã đặt",
     CANCEL = "Đã hủy",
+    ORDERED = "Đã đặt",
     DELIVERING = "Đang vận chuyển",
     FINISH = "Hoàn thành",
     REQUEST_REFUND = "Yêu cầu hoàn tiền",

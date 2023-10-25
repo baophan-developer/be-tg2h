@@ -3,7 +3,6 @@ import {
     acceptOrder,
     calculatorOrderPayment,
     cancelOrder,
-    changeStatusPayment,
     changeStatusShipping,
     createOrder,
     getOrders,
@@ -21,6 +20,5 @@ orderRouters.post("/refund", refundOrder);
 
 /** Temporary use */
 orderRouters.post("/shipping", changeStatusShipping);
-orderRouters.post("/payment", changeStatusPayment);
 
 export default orderRouters;

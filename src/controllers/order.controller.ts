@@ -253,18 +253,45 @@ export const changeStatusShipping = async (
     next: NextFunction
 ) => {
     try {
-    } catch (error: any) {
-        return next(new ResponseError(error.status, error.message));
-    }
-};
+        const { orderId, shipping } = req.body;
 
-/** Temporary use */
-export const changeStatusPayment = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
+        const order = await OrderModel.findById(orderId);
+
+        if (!order) throw new ResponseError(404, "Không tìm thấy đơn hàng.");
+
+        if (order.statusOrder !== EOrder.DELIVERING)
+            throw new ResponseError(400, "Không thể cập nhật trạng thái vận chuyển.");
+
+        const statusShipping = [
+            EStatusShipping.CANCEL,
+            EStatusShipping.DELIVERED,
+            EStatusShipping.DELIVERING,
+            EStatusShipping.DELIVER_RECEIVE_ITEM,
+            EStatusShipping.IN_STORE,
+            EStatusShipping.PENDING,
+            EStatusShipping.PREPARING,
+        ];
+
+        if (!statusShipping.includes(shipping))
+            throw new ResponseError(404, "Trạng thái vận chuyển không đúng.");
+
+        if (shipping === EStatusShipping.DELIVERED) {
+            // update payment is true and order status is finish
+            await OrderModel.findByIdAndUpdate(orderId, {
+                $set: {
+                    statusOrder: EOrder.FINISH,
+                    statusPayment: true,
+                    statusShipping: shipping,
+                },
+            });
+        } else {
+            await OrderModel.findByIdAndUpdate(orderId, {
+                $set: {
+                    statusShipping: shipping,
+                },
+            });
+        }
+        return res.json({ message: "Cập nhật trạng thái vận chuyển thành công." });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
     }
