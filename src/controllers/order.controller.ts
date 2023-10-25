@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import OrderModel, { IOrder } from "../models/Order";
+import OrderModel from "../models/Order";
 import ResponseError from "../utils/error-api";
 import decodeToken from "../utils/decode-token";
 import {
@@ -8,7 +8,6 @@ import {
     MSG_ORDER_CANNOT_DELIVERY_ADDRESS,
     MSG_ORDER_CAN_NOT_ACCEPT,
     MSG_ORDER_CAN_NOT_CANCEL,
-    MSG_ORDER_CAN_NOT_CHANGE_STATUS_SHIPPING,
     MSG_ORDER_CREATE_FAILED,
     MSG_ORDER_CREATE_SUCCESS,
     MSG_ORDER_NOT_FOUND,
@@ -19,19 +18,35 @@ import DiscountModel, { IDiscount } from "../models/Discount";
 import { Schema } from "mongoose";
 import { EOrder, EStatusShipping } from "../enums/order.enum";
 import SessionCartModel from "../models/SessionCart";
+import BoughtModel from "../models/Bought";
 
 interface IOderFiler {
     filter: {
         owner: Schema.Types.ObjectId;
         seller: Schema.Types.ObjectId;
     };
+    pagination: {
+        page: number;
+        limit: number;
+    };
 }
 
 export const getOrders = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { filter } = req.body as IOderFiler;
+        const { filter, pagination } = req.body as IOderFiler;
 
-        const orders = await OrderModel.find(filter)
+        const defaultPage = 0;
+        const defaultLimit = 10;
+
+        const limit = pagination?.limit || defaultLimit;
+        const skip = pagination?.page * pagination?.limit || defaultPage;
+
+        const count = await OrderModel.find(filter).count();
+
+        const orders = await OrderModel.find(filter, null, {
+            skip: skip,
+            limit: limit,
+        })
             .populate("seller", "name avatar")
             .populate("owner", "name avatar")
             .populate("shipping", "name avatar")
@@ -39,7 +54,12 @@ export const getOrders = async (req: Request, res: Response, next: NextFunction)
             .populate("items.product", "name images price")
             .exec();
 
-        return res.json({ list: orders });
+        return res.json({
+            list: orders,
+            total: count,
+            page: pagination?.page || defaultPage,
+            limit: pagination?.limit || defaultLimit,
+        });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
     }
@@ -216,13 +236,6 @@ export const acceptOrder = async (req: Request, res: Response, next: NextFunctio
             { new: true, runValidators: true }
         );
 
-        // Increase sold product in items
-        order.items.forEach(async (item: any) => {
-            await ProductModel.findByIdAndUpdate(item.product, {
-                $inc: { sold: item.quantity },
-            }).exec();
-        });
-
         return res.json({ message: MSG_ORDER_ACCEPT_SUCCESS });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
@@ -253,18 +266,73 @@ export const changeStatusShipping = async (
     next: NextFunction
 ) => {
     try {
-    } catch (error: any) {
-        return next(new ResponseError(error.status, error.message));
-    }
-};
+        const { orderId, shipping } = req.body;
 
-/** Temporary use */
-export const changeStatusPayment = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
+        const order = await OrderModel.findById(orderId);
+
+        if (!order) throw new ResponseError(404, "Không tìm thấy đơn hàng.");
+
+        if (order.statusOrder !== EOrder.DELIVERING)
+            throw new ResponseError(400, "Không thể cập nhật trạng thái vận chuyển.");
+
+        const statusShipping = [
+            EStatusShipping.CANCEL,
+            EStatusShipping.DELIVERED,
+            EStatusShipping.DELIVERING,
+            EStatusShipping.DELIVER_RECEIVE_ITEM,
+            EStatusShipping.IN_STORE,
+            EStatusShipping.PENDING,
+            EStatusShipping.PREPARING,
+        ];
+
+        if (!statusShipping.includes(shipping))
+            throw new ResponseError(404, "Trạng thái vận chuyển không đúng.");
+
+        if (shipping === EStatusShipping.DELIVERED) {
+            // update payment is true and order status is finish
+            await OrderModel.findByIdAndUpdate(orderId, {
+                $set: {
+                    statusOrder: EOrder.FINISH,
+                    statusPayment: true,
+                    statusShipping: shipping,
+                },
+            });
+
+            // Add product in bought of owner order
+            const findBought = await BoughtModel.find({ owner: order.owner });
+
+            const bought = findBought[0];
+
+            const items = order.items.map((item) => item.product);
+            if (bought) {
+                await BoughtModel.findByIdAndUpdate(
+                    bought._id,
+                    {
+                        $push: { products: { $each: items } },
+                    },
+                    { new: true }
+                );
+            } else {
+                await BoughtModel.create({
+                    owner: order.owner,
+                    products: items,
+                });
+            }
+
+            // Increase sold product in items
+            order.items.forEach(async (item: any) => {
+                await ProductModel.findByIdAndUpdate(item.product, {
+                    $inc: { sold: item.quantity },
+                }).exec();
+            });
+        } else {
+            await OrderModel.findByIdAndUpdate(orderId, {
+                $set: {
+                    statusShipping: shipping,
+                },
+            });
+        }
+        return res.json({ message: "Cập nhật trạng thái vận chuyển thành công." });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
     }
