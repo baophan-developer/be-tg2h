@@ -13,7 +13,7 @@ export const getBought = async (req: Request, res: Response, next: NextFunction)
     try {
         const { filters } = req.body as IQuery;
 
-        const bought = await BoughtModel.findOne(filters);
+        const bought = await BoughtModel.findOne(filters).populate("products").exec();
 
         return res.json({ item: bought });
     } catch (error: any) {
