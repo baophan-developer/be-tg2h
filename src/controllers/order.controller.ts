@@ -18,6 +18,7 @@ import DiscountModel, { IDiscount } from "../models/Discount";
 import { Schema } from "mongoose";
 import { EOrder, EStatusShipping } from "../enums/order.enum";
 import SessionCartModel from "../models/SessionCart";
+import BoughtModel from "../models/Bought";
 
 interface IOderFiler {
     filter: {
@@ -296,6 +297,27 @@ export const changeStatusShipping = async (
                     statusShipping: shipping,
                 },
             });
+
+            // Add product in bought of owner order
+            const findBought = await BoughtModel.find({ owner: order.owner });
+
+            const bought = findBought[0];
+
+            const items = order.items.map((item) => item.product);
+            if (bought) {
+                await BoughtModel.findByIdAndUpdate(
+                    bought._id,
+                    {
+                        $push: { products: { $each: items } },
+                    },
+                    { new: true }
+                );
+            } else {
+                await BoughtModel.create({
+                    owner: order.owner,
+                    products: items,
+                });
+            }
 
             // Increase sold product in items
             order.items.forEach(async (item: any) => {
