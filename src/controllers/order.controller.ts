@@ -19,6 +19,7 @@ import { Schema } from "mongoose";
 import { EOrder, EStatusShipping } from "../enums/order.enum";
 import SessionCartModel from "../models/SessionCart";
 import BoughtModel from "../models/Bought";
+import createCodeOrder from "../utils/create-code-order";
 
 interface IOderFiler {
     filter: {
@@ -136,7 +137,12 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
         if (!deliveryAddress)
             throw new ResponseError(400, MSG_ORDER_CANNOT_DELIVERY_ADDRESS);
 
+        // create code order
+        const count = await OrderModel.find().count();
+        const code = createCodeOrder(count);
+
         const order = await OrderModel.create({
+            code: code,
             owner: userId,
             seller: seller,
             shipping: shipping,

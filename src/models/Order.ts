@@ -3,6 +3,7 @@ import { EOrder, EStatusShipping } from "../enums/order.enum";
 
 export interface IOrder {
     id: Schema.Types.ObjectId;
+    code: string;
     owner: Schema.Types.ObjectId;
     seller: Schema.Types.ObjectId;
     shipping: Schema.Types.ObjectId;
@@ -41,6 +42,11 @@ export interface IOrder {
 
 const schemaOrder = new Schema<IOrder>(
     {
+        code: {
+            type: String,
+            required: true,
+            unique: true,
+        },
         owner: {
             type: Schema.Types.ObjectId,
             required: true,
