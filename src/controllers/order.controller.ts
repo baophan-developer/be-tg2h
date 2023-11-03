@@ -35,6 +35,8 @@ export const getOrders = async (req: Request, res: Response, next: NextFunction)
     try {
         const { filter, pagination } = req.body as IOderFiler;
 
+        console.log(filter);
+
         const defaultPage = 0;
         const defaultLimit = 10;
 
@@ -322,7 +324,7 @@ export const changeStatusShipping = async (
             // Increase sold product in items
             order.items.forEach(async (item: any) => {
                 await ProductModel.findByIdAndUpdate(item.product, {
-                    $inc: { sold: item.quantity },
+                    $inc: { sold: item.quantity, quantity: -item.quantity },
                 }).exec();
             });
         } else {

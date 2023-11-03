@@ -28,7 +28,9 @@ export const calculatorRevenue = async (
 
         const paid = ordersSuccess.reduce((value, curr) => curr.totalPayment + value, 0);
 
-        const awaitPayment = orderDelivering.reduce(
+        const ordersAwaitPayment = orders.filter((item) => item.statusPayment === false);
+
+        const awaitPayment = ordersAwaitPayment.reduce(
             (value, curr) => curr.totalPayment + value,
             0
         );

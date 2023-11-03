@@ -33,6 +33,7 @@ export interface IProduct {
     status: boolean;
     reviews: number;
     rating: number;
+    quantity: number;
 }
 
 const productSchema = new Schema<IProduct>({
@@ -172,6 +173,10 @@ const productSchema = new Schema<IProduct>({
         default: 0,
     },
     rating: {
+        type: Number,
+        default: 0,
+    },
+    quantity: {
         type: Number,
         default: 0,
     },
