@@ -298,11 +298,13 @@ export const changeStatusShipping = async (
 
         if (shipping === EStatusShipping.DELIVERED) {
             // update payment is true and order status is finish
+            const today = new Date();
             await OrderModel.findByIdAndUpdate(orderId, {
                 $set: {
                     statusOrder: EOrder.FINISH,
                     statusPayment: true,
                     statusShipping: shipping,
+                    dayReceiveOrder: today,
                 },
             });
 

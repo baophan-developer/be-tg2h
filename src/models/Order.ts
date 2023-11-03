@@ -28,6 +28,7 @@ export interface IOrder {
         | EStatusShipping.DELIVER_RECEIVE_ITEM
         | EStatusShipping.DELIVERING
         | EStatusShipping.DELIVERED;
+    dayReceiveOrder: Date;
     statusOrder:
         | EOrder.ORDERED
         | EOrder.CANCEL
@@ -114,6 +115,9 @@ const schemaOrder = new Schema<IOrder>(
             type: String,
             enum: [EOrder.CANCEL, EOrder.FINISH, EOrder.ORDERED, EOrder.DELIVERING],
             default: EOrder.ORDERED,
+        },
+        dayReceiveOrder: {
+            type: Date,
         },
         reasonCancel: {
             type: String,
