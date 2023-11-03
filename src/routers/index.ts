@@ -24,6 +24,7 @@ import paymentRouters from "./payment.routers";
 import orderRouters from "./order.router";
 import commentRouters from "./comment.router";
 import boughtRouters from "./bought.routers";
+import financeRouters from "./finance.routers";
 
 const routers = express();
 
@@ -67,5 +68,7 @@ routers.use("/order", verifyToken, orderRouters);
 routers.use("/comment", verifyToken, commentRouters);
 // Bought
 routers.use("/bought", verifyToken, boughtRouters);
+// Management finance
+routers.use("/finance", verifyToken, financeRouters);
 
 export default routers;
