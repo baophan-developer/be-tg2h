@@ -311,15 +311,28 @@ export const changeStatusShipping = async (
 
             const bought = findBought[0];
 
+            /** items of order using for check duplicate product */
             const items = order.items.map((item) => item.product);
+
             if (bought) {
+                /** newItems using add into array products of bought product */
+                const newItems: Schema.Types.ObjectId[] = [];
+
+                items.forEach((item) => {
+                    const checkDuplicateProduct = bought.products.findIndex(
+                        (proId) => proId.toString() === item.toString()
+                    );
+                    if (checkDuplicateProduct === -1) newItems.push(item);
+                });
+
                 await BoughtModel.findByIdAndUpdate(
                     bought._id,
                     {
-                        $push: { products: { $each: items } },
+                        $push: { products: { $each: newItems } },
                     },
                     { new: true }
                 );
+                // calculate reference price product to user
             } else {
                 await BoughtModel.create({
                     owner: order.owner,
