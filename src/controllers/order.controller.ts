@@ -18,8 +18,10 @@ import DiscountModel, { IDiscount } from "../models/Discount";
 import { Schema } from "mongoose";
 import { EOrder, EStatusShipping } from "../enums/order.enum";
 import SessionCartModel from "../models/SessionCart";
-import BoughtModel from "../models/Bought";
+import BoughtModel, { IBought } from "../models/Bought";
 import createCodeOrder from "../utils/create-code-order";
+import { calculateReferencePriceForUser } from "../utils/recommendation";
+import UserModel from "../models/User";
 
 interface IOderFiler {
     filter: {
@@ -266,6 +268,29 @@ export const refundOrder = async (req: Request, res: Response, next: NextFunctio
 };
 
 /** Temporary use */
+const saveReferencePriceForUser = async (boughtId: Schema.Types.ObjectId) => {
+    const newBought = await BoughtModel.findById(boughtId).populate("products");
+
+    if (!newBought)
+        throw new ResponseError(
+            404,
+            "Lỗi, không tìm thấy danh sách sản phẩm đã mua trước đó"
+        );
+
+    const products = newBought.products;
+    const referencePrice: any = calculateReferencePriceForUser(products);
+    const userId = newBought.owner;
+    await UserModel.findByIdAndUpdate(
+        userId,
+        {
+            $set: {
+                referencePrice: referencePrice,
+            },
+        },
+        { new: true }
+    );
+};
+
 export const changeStatusShipping = async (
     req: Request,
     res: Response,
@@ -333,13 +358,15 @@ export const changeStatusShipping = async (
                     { new: true }
                 );
                 // calculate reference price product to user
+                await saveReferencePriceForUser(bought._id);
             } else {
-                await BoughtModel.create({
+                const bought = await BoughtModel.create({
                     owner: order.owner,
                     products: items,
                 });
+                // calculate reference price product to user
+                await saveReferencePriceForUser(bought._id);
             }
-
             // Increase sold product in items
             order.items.forEach(async (item: any) => {
                 await ProductModel.findByIdAndUpdate(item.product, {
