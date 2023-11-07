@@ -54,7 +54,7 @@ routers.use("/cpu", verifyToken, cpuRouters);
 // Product
 routers.use("/product", verifyToken, productRouters);
 // User
-routers.use("/user", verifyToken, verifyAdmin, userRouters);
+routers.use("/user", verifyToken, userRouters);
 // Discount
 routers.use("/discount", verifyToken, discountRouters);
 // Session cart
