@@ -23,6 +23,7 @@ export interface IUser {
     gender: boolean;
     birthday: Date;
     favorites: Schema.Types.ObjectId[];
+    referencePrice: number;
 }
 
 interface IUserMethods {
@@ -97,6 +98,10 @@ const userSchema = new Schema<IUser, IUserMethods, TUserModel>(
             default: true,
         },
         favorites: [{ type: Schema.Types.ObjectId, ref: "Product" }],
+        referencePrice: {
+            type: Number,
+            default: 0,
+        },
     },
     { timestamps: true }
 );

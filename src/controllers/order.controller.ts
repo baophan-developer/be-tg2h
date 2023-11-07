@@ -18,7 +18,10 @@ import DiscountModel, { IDiscount } from "../models/Discount";
 import { Schema } from "mongoose";
 import { EOrder, EStatusShipping } from "../enums/order.enum";
 import SessionCartModel from "../models/SessionCart";
-import BoughtModel from "../models/Bought";
+import BoughtModel, { IBought } from "../models/Bought";
+import createCodeOrder from "../utils/create-code-order";
+import { calculateReferencePriceForUser } from "../utils/recommendation";
+import UserModel from "../models/User";
 
 interface IOderFiler {
     filter: {
@@ -134,7 +137,12 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
         if (!deliveryAddress)
             throw new ResponseError(400, MSG_ORDER_CANNOT_DELIVERY_ADDRESS);
 
+        // create code order
+        const count = await OrderModel.find().count();
+        const code = createCodeOrder(count);
+
         const order = await OrderModel.create({
+            code: code,
             owner: userId,
             seller: seller,
             shipping: shipping,
@@ -260,6 +268,29 @@ export const refundOrder = async (req: Request, res: Response, next: NextFunctio
 };
 
 /** Temporary use */
+const saveReferencePriceForUser = async (boughtId: Schema.Types.ObjectId) => {
+    const newBought = await BoughtModel.findById(boughtId).populate("products");
+
+    if (!newBought)
+        throw new ResponseError(
+            404,
+            "Lỗi, không tìm thấy danh sách sản phẩm đã mua trước đó"
+        );
+
+    const products = newBought.products;
+    const referencePrice: any = calculateReferencePriceForUser(products);
+    const userId = newBought.owner;
+    await UserModel.findByIdAndUpdate(
+        userId,
+        {
+            $set: {
+                referencePrice: referencePrice,
+            },
+        },
+        { new: true }
+    );
+};
+
 export const changeStatusShipping = async (
     req: Request,
     res: Response,
@@ -290,11 +321,13 @@ export const changeStatusShipping = async (
 
         if (shipping === EStatusShipping.DELIVERED) {
             // update payment is true and order status is finish
+            const today = new Date();
             await OrderModel.findByIdAndUpdate(orderId, {
                 $set: {
                     statusOrder: EOrder.FINISH,
                     statusPayment: true,
                     statusShipping: shipping,
+                    dayReceiveOrder: today,
                 },
             });
 
@@ -303,26 +336,41 @@ export const changeStatusShipping = async (
 
             const bought = findBought[0];
 
+            /** items of order using for check duplicate product */
             const items = order.items.map((item) => item.product);
+
             if (bought) {
+                /** newItems using add into array products of bought product */
+                const newItems: Schema.Types.ObjectId[] = [];
+
+                items.forEach((item) => {
+                    const checkDuplicateProduct = bought.products.findIndex(
+                        (proId) => proId.toString() === item.toString()
+                    );
+                    if (checkDuplicateProduct === -1) newItems.push(item);
+                });
+
                 await BoughtModel.findByIdAndUpdate(
                     bought._id,
                     {
-                        $push: { products: { $each: items } },
+                        $push: { products: { $each: newItems } },
                     },
                     { new: true }
                 );
+                // calculate reference price product to user
+                await saveReferencePriceForUser(bought._id);
             } else {
-                await BoughtModel.create({
+                const bought = await BoughtModel.create({
                     owner: order.owner,
                     products: items,
                 });
+                // calculate reference price product to user
+                await saveReferencePriceForUser(bought._id);
             }
-
             // Increase sold product in items
             order.items.forEach(async (item: any) => {
                 await ProductModel.findByIdAndUpdate(item.product, {
-                    $inc: { sold: item.quantity },
+                    $inc: { sold: item.quantity, quantity: -item.quantity },
                 }).exec();
             });
         } else {

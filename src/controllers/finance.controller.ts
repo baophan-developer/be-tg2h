@@ -22,13 +22,17 @@ export const calculatorRevenue = async (
 
         const ordersSuccess = orders.filter((item) => item.statusOrder === EOrder.FINISH);
 
+        const ordersPaid = orders.filter((item) => item.statusPayment === true);
+
         const orderDelivering = orders.filter(
             (item) => item.statusOrder === EOrder.DELIVERING
         );
 
-        const paid = ordersSuccess.reduce((value, curr) => curr.totalPayment + value, 0);
+        const paid = ordersPaid.reduce((value, curr) => curr.totalPayment + value, 0);
 
-        const awaitPayment = orderDelivering.reduce(
+        const ordersAwaitPayment = orders.filter((item) => item.statusPayment === false);
+
+        const awaitPayment = ordersAwaitPayment.reduce(
             (value, curr) => curr.totalPayment + value,
             0
         );
