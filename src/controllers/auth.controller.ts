@@ -29,6 +29,8 @@ import {
     MAX_LENGTH_PASSWORD_ACCEPT,
     MIN_LENGTH_PASSWORD_ACCEPT,
 } from "../constants/user";
+import BoughtModel from "../models/Bought";
+import AccountModel from "../models/Account";
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -42,7 +44,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             throw new ResponseError(HttpStatusCode.NOT_FOUND, MSG_ERROR_ROLE_NOT_EXISTED);
         }
 
-        await UserModel.create({
+        const user = await UserModel.create({
             email: email,
             password: password,
             phone: phone,
@@ -51,6 +53,17 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             gender: gender,
             birthday: birthday,
             avatar: configs.defaultAvatar,
+        });
+
+        // create bought and create account
+        await BoughtModel.create({
+            owner: user._id,
+            products: [],
+        });
+
+        await AccountModel.create({
+            owner: user._id,
+            accountBalance: 0,
         });
 
         return res.json({
