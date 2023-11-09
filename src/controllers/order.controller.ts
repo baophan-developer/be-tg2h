@@ -245,7 +245,8 @@ export const acceptOrder = async (req: Request, res: Response, next: NextFunctio
                     sellerAccount._id,
                     {
                         $set: {
-                            accountBalance: order.totalPayment,
+                            accountBalance:
+                                sellerAccount.accountBalance + order.totalPayment,
                         },
                     },
                     { new: true }
