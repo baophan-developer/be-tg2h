@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-export interface IAccount {
+export interface IAccounting {
     owner: Schema.Types.ObjectId;
     accountBalance: number;
     bank: {
@@ -12,10 +12,11 @@ export interface IAccount {
     };
 }
 
-const schemaAccount = new Schema<IAccount>({
+const schemaAccounting = new Schema<IAccounting>({
     owner: {
         type: Schema.Types.ObjectId,
         ref: "User",
+        unique: true,
     },
     accountBalance: {
         type: Number,
@@ -29,6 +30,10 @@ const schemaAccount = new Schema<IAccount>({
     },
 });
 
-const AccountModel = model<IAccount>("Account", schemaAccount);
+const AccountingModel = model<IAccounting>("Accounting", schemaAccounting);
 
-export default AccountModel;
+export default AccountingModel;
+
+/**
+ * Tài chính được cập nhật khi đơn hàng được thanh toán và đơn hàng được duyệt.
+ */
