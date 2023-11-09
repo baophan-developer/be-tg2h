@@ -25,7 +25,7 @@ import orderRouters from "./order.router";
 import commentRouters from "./comment.router";
 import boughtRouters from "./bought.routers";
 import financeRouters from "./finance.routers";
-import recommendationRouters from "./recomendation.routers";
+import recommendationRouters from "./recommendation.routers";
 import accountingRouters from "./accounting.routers";
 
 const routers = express();
