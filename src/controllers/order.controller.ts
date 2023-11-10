@@ -175,7 +175,7 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
 
 export const cancelOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { id, idUserRequest, reasonCancel } = req.body;
+        const { id, reasonCancel } = req.body;
 
         const order = await OrderModel.findById(id);
 
@@ -185,28 +185,15 @@ export const cancelOrder = async (req: Request, res: Response, next: NextFunctio
             throw new ResponseError(400, MSG_ORDER_CAN_NOT_CANCEL);
 
         if (order.statusPayment) {
-            if (idUserRequest === order.owner.toString()) {
-                await OrderModel.findByIdAndUpdate(id, {
-                    $set: {
-                        statusOrder: EOrder.REQUEST_REFUND,
-                        statusShipping: EStatusShipping.CANCEL,
-                        reasonCancel: reasonCancel,
-                        refund: false,
-                    },
-                });
-                return res.json({ message: MSG_ORDER_REQUEST_REFUND });
-            }
-            if (idUserRequest === order.seller.toString()) {
-                await OrderModel.findByIdAndUpdate(id, {
-                    $set: {
-                        statusOrder: EOrder.CANCEL,
-                        statusShipping: EStatusShipping.CANCEL,
-                        reasonCancel: reasonCancel,
-                        refund: true,
-                    },
-                });
-                return res.json({ message: MSG_ORDER_CANCEL });
-            }
+            await OrderModel.findByIdAndUpdate(id, {
+                $set: {
+                    statusOrder: EOrder.CANCEL,
+                    statusShipping: EStatusShipping.CANCEL,
+                    reasonCancel: reasonCancel,
+                    refund: true,
+                },
+            });
+            return res.json({ message: MSG_ORDER_CANCEL });
         }
 
         await OrderModel.findByIdAndUpdate(id, {
@@ -283,8 +270,6 @@ export const refundOrder = async (req: Request, res: Response, next: NextFunctio
 
         await OrderModel.findByIdAndUpdate(orderId, {
             $set: {
-                statusOrder: EOrder.CANCEL,
-                statusShipping: EStatusShipping.CANCEL,
                 refund: true,
             },
         });
