@@ -22,6 +22,7 @@ import BoughtModel, { IBought } from "../models/Bought";
 import createCodeOrder from "../utils/create-code-order";
 import { calculateReferencePriceForUser } from "../utils/recommendation";
 import UserModel from "../models/User";
+import AccountingModel from "../models/Account";
 
 interface IOderFiler {
     filter: {
@@ -174,7 +175,7 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
 
 export const cancelOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { id, idUserRequest, reasonCancel } = req.body;
+        const { id, reasonCancel } = req.body;
 
         const order = await OrderModel.findById(id);
 
@@ -184,28 +185,15 @@ export const cancelOrder = async (req: Request, res: Response, next: NextFunctio
             throw new ResponseError(400, MSG_ORDER_CAN_NOT_CANCEL);
 
         if (order.statusPayment) {
-            if (idUserRequest === order.owner.toString()) {
-                await OrderModel.findByIdAndUpdate(id, {
-                    $set: {
-                        statusOrder: EOrder.REQUEST_REFUND,
-                        statusShipping: EStatusShipping.CANCEL,
-                        reasonCancel: reasonCancel,
-                        refund: false,
-                    },
-                });
-                return res.json({ message: MSG_ORDER_REQUEST_REFUND });
-            }
-            if (idUserRequest === order.seller.toString()) {
-                await OrderModel.findByIdAndUpdate(id, {
-                    $set: {
-                        statusOrder: EOrder.CANCEL,
-                        statusShipping: EStatusShipping.CANCEL,
-                        reasonCancel: reasonCancel,
-                        refund: true,
-                    },
-                });
-                return res.json({ message: MSG_ORDER_CANCEL });
-            }
+            await OrderModel.findByIdAndUpdate(id, {
+                $set: {
+                    statusOrder: EOrder.CANCEL,
+                    statusShipping: EStatusShipping.CANCEL,
+                    reasonCancel: reasonCancel,
+                    refund: true,
+                },
+            });
+            return res.json({ message: MSG_ORDER_CANCEL });
         }
 
         await OrderModel.findByIdAndUpdate(id, {
@@ -225,6 +213,7 @@ export const cancelOrder = async (req: Request, res: Response, next: NextFunctio
 export const acceptOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { orderId } = req.body;
+        const { userId } = decodeToken(req);
 
         const order = await OrderModel.findById(orderId).exec();
 
@@ -232,6 +221,31 @@ export const acceptOrder = async (req: Request, res: Response, next: NextFunctio
 
         if (order.statusOrder === EOrder.CANCEL)
             throw new ResponseError(400, MSG_ORDER_CAN_NOT_ACCEPT);
+
+        // update account for seller
+        if (order.statusPayment === true) {
+            const account = await AccountingModel.find({ owner: userId });
+            const sellerAccount = account[0];
+            if (sellerAccount) {
+                // update
+                await AccountingModel.findByIdAndUpdate(
+                    sellerAccount._id,
+                    {
+                        $set: {
+                            accountBalance:
+                                sellerAccount.accountBalance + order.totalPayment,
+                        },
+                    },
+                    { new: true }
+                );
+            } else {
+                // create
+                await AccountingModel.create({
+                    owner: userId,
+                    accountBalance: order.totalPayment,
+                });
+            }
+        }
 
         await OrderModel.findByIdAndUpdate(
             orderId,
@@ -256,8 +270,6 @@ export const refundOrder = async (req: Request, res: Response, next: NextFunctio
 
         await OrderModel.findByIdAndUpdate(orderId, {
             $set: {
-                statusOrder: EOrder.CANCEL,
-                statusShipping: EStatusShipping.CANCEL,
                 refund: true,
             },
         });
