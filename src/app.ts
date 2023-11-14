@@ -5,11 +5,25 @@ import routers from "./routers";
 import ResponseError from "./utils/error-api";
 import HttpStatusCode from "./enums/http-status-code";
 
-const app: Express = express();
+import http from "http";
+import { Server } from "socket.io";
 
 const corsOptions: CorsOptions = {
     origin: [configs.client.user, configs.client.admin],
 };
+
+const app: Express = express();
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, {
+    cors: corsOptions,
+});
+
+io.on("connection", (socket) => {
+    console.log(`New user connected: ${socket.id}`);
+    socket.on("disconnect", () => {
+        console.log(`User discounted: ${socket.id}`);
+    });
+});
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -32,4 +46,4 @@ app.use((error: ResponseError, req: Request, res: Response, next: NextFunction) 
     });
 });
 
-export default app;
+export default httpServer;

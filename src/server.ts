@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import app from "./app";
+import httpServer from "./app";
 import configs from "./configs";
 
 const server = async () => {
@@ -8,7 +8,7 @@ const server = async () => {
         console.log("[Server]: Connect database successfully!");
 
         const port = configs.port;
-        app.listen(port, () => {
+        httpServer.listen(port, () => {
             console.log(`[Server]: Run PORT: ${port}`);
         });
     } catch (error) {
