@@ -14,14 +14,30 @@ const corsOptions: CorsOptions = {
 
 const app: Express = express();
 const httpServer = http.createServer(app);
-const io = new Server(httpServer, {
+const socketIO = new Server(httpServer, {
     cors: corsOptions,
 });
 
-io.on("connection", (socket) => {
-    console.log(`New user connected: ${socket.id}`);
+let usersOnline: { socketId: string; userId: string }[] = [];
+
+socketIO.on("connection", (socket) => {
+    console.log(`User connected socket.id: ${socket.id}`);
+    // Catch new user online system
+    socket.on("userOnline", (data) => {
+        // Check user online
+        const index = usersOnline.findIndex((user) => user.userId == data.userId);
+        if (index === -1) usersOnline.push(data);
+    });
+
+    // Catch user logout and remove user in array users online
+    socket.on("userLogout", (data) => {
+        usersOnline = usersOnline.filter((user) => user.userId !== data.userId);
+    });
+
     socket.on("disconnect", () => {
-        console.log(`User discounted: ${socket.id}`);
+        console.log(`User disconnected socket.id: ${socket.id}`);
+        // Remove user when user offline (disconnect)
+        usersOnline = usersOnline.filter((user) => user.socketId !== socket.id);
     });
 });
 
