@@ -186,10 +186,30 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
 export const cancelOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id, reasonCancel } = req.body;
+        const { userId } = decodeToken(req);
 
         const order = await OrderModel.findById(id);
 
         if (!order) throw new ResponseError(404, MSG_ORDER_NOT_FOUND);
+
+        const isOwnerDo = order.owner.toString() === userId.toString();
+
+        // Save notification
+        if (isOwnerDo) {
+            await NotificationModel.create({
+                userReceive: order.seller,
+                title: "Đơn hàng bị hủy",
+                message: `Đơn hàng ${order.code} đã bị hủy bởi người mua với lý do ${reasonCancel}`,
+                action: `${configs.client.user}/account/order-request`,
+            });
+        } else {
+            await NotificationModel.create({
+                userReceive: order.owner,
+                title: "Đơn hàng bị hủy",
+                message: `Đơn hàng ${order.code} đã bị hủy bởi người bán với lý do ${reasonCancel}`,
+                action: `${configs.client.user}/account/orders-buy`,
+            });
+        }
 
         if (!(order.statusOrder === EOrder.ORDERED))
             throw new ResponseError(400, MSG_ORDER_CAN_NOT_CANCEL);
