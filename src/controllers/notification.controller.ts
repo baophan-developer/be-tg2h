@@ -67,7 +67,7 @@ export const getAllNotification = async (
             {
                 skip: skip,
                 limit: limit,
-                sort: { isSeen: 1 },
+                sort: { isSeen: 1, createdAt: -1 },
             }
         ).exec();
 

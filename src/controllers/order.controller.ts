@@ -23,6 +23,8 @@ import createCodeOrder from "../utils/create-code-order";
 import { calculateReferencePriceForUser } from "../utils/recommendation";
 import UserModel from "../models/User";
 import AccountingModel from "../models/Account";
+import NotificationModel from "../models/Notification";
+import configs from "../configs";
 
 interface IOderFiler {
     filter: {
@@ -157,6 +159,14 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
 
         if (!order) throw new ResponseError(400, MSG_ORDER_CREATE_FAILED);
 
+        // Save message for seller
+        await NotificationModel.create({
+            userReceive: seller,
+            title: `Bạn có một đơn hàng mới.`,
+            message: `Mã đơn hàng là ${order.code}`,
+            action: `${configs.client.user}/account/order-request`,
+        });
+
         // remove cart
         await SessionCartModel.findByIdAndDelete(cartId);
 
@@ -218,6 +228,14 @@ export const acceptOrder = async (req: Request, res: Response, next: NextFunctio
         const order = await OrderModel.findById(orderId).exec();
 
         if (!order) throw new ResponseError(404, MSG_ORDER_NOT_FOUND);
+
+        // Create notification
+        await NotificationModel.create({
+            userReceive: order.owner,
+            title: "Đơn hàng của bạn đã được duyệt",
+            message: `Đơn hàng ${order._id} đã được duyệt.`,
+            action: `${configs.client.user}/account/orders-buy`,
+        });
 
         if (order.statusOrder === EOrder.CANCEL)
             throw new ResponseError(400, MSG_ORDER_CAN_NOT_ACCEPT);
