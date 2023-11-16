@@ -381,6 +381,14 @@ export const changeStatusShipping = async (
                 },
             });
 
+            // Create notification for owner order delivered
+            await NotificationModel.create({
+                userReceive: order.owner,
+                title: "Cập nhật đơn hàng",
+                message: `Đơn hàng ${order.code} đã được giao thành công.`,
+                action: `${configs.client.user}/account/orders-buy`,
+            });
+
             // Add product in bought of owner order
             const findBought = await BoughtModel.find({ owner: order.owner });
 
@@ -389,6 +397,7 @@ export const changeStatusShipping = async (
             /** items of order using for check duplicate product */
             const items = order.items.map((item) => item.product);
 
+            // Block code in bought is add product in bought
             if (bought) {
                 /** newItems using add into array products of bought product */
                 const newItems: Schema.Types.ObjectId[] = [];
@@ -428,6 +437,13 @@ export const changeStatusShipping = async (
                 $set: {
                     statusShipping: shipping,
                 },
+            });
+            // Create notification for update delivery orders
+            await NotificationModel.create({
+                userReceive: order.owner,
+                title: "Cập nhật đơn hàng",
+                message: `Đơn hàng ${order.code}: ${shipping}`,
+                action: `${configs.client.user}/account/orders-buy`,
             });
         }
         return res.json({ message: "Cập nhật trạng thái vận chuyển thành công." });
