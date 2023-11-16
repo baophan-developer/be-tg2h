@@ -27,6 +27,7 @@ import boughtRouters from "./bought.routers";
 import financeRouters from "./finance.routers";
 import recommendationRouters from "./recommendation.routers";
 import accountingRouters from "./accounting.routers";
+import notificationRouters from "./notification.routers";
 
 const routers = express();
 
@@ -76,5 +77,7 @@ routers.use("/finance", verifyToken, financeRouters);
 routers.use("/recommendation", verifyToken, recommendationRouters);
 // Accounting
 routers.use("/accounting", verifyToken, accountingRouters);
+// Notification
+routers.use("/notification", verifyToken, notificationRouters);
 
 export default routers;
