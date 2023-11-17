@@ -18,15 +18,17 @@ export const calculatorRevenue = async (
             ...filter,
         });
 
-        /* 
-            Calculator for order paid,
-        */
-        const ordersPaid = orders.filter((item) => item.statusPayment === true);
+        // Calculator for order paid,
+        const ordersPaid = orders.filter(
+            (item) =>
+                item.statusPayment === true &&
+                item.statusOrder !== EOrder.REQUEST_REFUND &&
+                item.statusOrder !== EOrder.CANCEL
+        );
+
         const paidTotal = ordersPaid.reduce((val, curr) => curr.totalPayment + val, 0);
 
-        /* 
-            Calculator for await payment,
-        */
+        // Calculator for await payment,
         const ordersAwaitPayment = orders.filter(
             (item) => item.statusPayment === false && item.statusOrder !== EOrder.CANCEL
         );
@@ -39,10 +41,12 @@ export const calculatorRevenue = async (
         const ordersSuccess = orders.filter(
             (item) => item.statusOrder === EOrder.FINISH
         ).length;
+
         // Calculator number orders cancel
         const ordersCancel = orders.filter(
             (item) => item.statusOrder === EOrder.CANCEL
         ).length;
+
         // Calculator number orders delivery
         const ordersDelivery = orders.filter(
             (item) => item.statusOrder === EOrder.DELIVERING

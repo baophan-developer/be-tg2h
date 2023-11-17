@@ -159,6 +159,31 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
 
         if (!order) throw new ResponseError(400, MSG_ORDER_CREATE_FAILED);
 
+        if (order.statusPayment) {
+            // Save the accounting for seller
+            const accountOfSeller = await AccountingModel.findOne({
+                owner: order.seller,
+            }).exec();
+
+            if (accountOfSeller) {
+                const newBalance = accountOfSeller.accountBalance + totalPayment;
+                await AccountingModel.findByIdAndUpdate(
+                    accountOfSeller._id,
+                    {
+                        $set: { accountBalance: newBalance },
+                    },
+                    { new: true }
+                );
+            } else {
+                // If account not yet, It will create
+                // *Note: This does not exist, if data user is synchronized
+                await AccountingModel.create({
+                    owner: order.seller,
+                    accountBalance: order.totalPayment,
+                });
+            }
+        }
+
         // Save message for seller
         await NotificationModel.create({
             userReceive: seller,
@@ -192,10 +217,14 @@ export const cancelOrder = async (req: Request, res: Response, next: NextFunctio
 
         if (!order) throw new ResponseError(404, MSG_ORDER_NOT_FOUND);
 
+        if (!(order.statusOrder === EOrder.ORDERED))
+            throw new ResponseError(400, MSG_ORDER_CAN_NOT_CANCEL);
+
         const isOwnerDo = order.owner.toString() === userId.toString();
 
-        // Save notification
+        // Case order paid
         if (isOwnerDo) {
+            // Create notification
             await NotificationModel.create({
                 userReceive: order.seller,
                 title: "Đơn hàng bị hủy",
@@ -211,21 +240,50 @@ export const cancelOrder = async (req: Request, res: Response, next: NextFunctio
             });
         }
 
-        if (!(order.statusOrder === EOrder.ORDERED))
-            throw new ResponseError(400, MSG_ORDER_CAN_NOT_CANCEL);
-
         if (order.statusPayment) {
-            await OrderModel.findByIdAndUpdate(id, {
-                $set: {
-                    statusOrder: EOrder.CANCEL,
-                    statusShipping: EStatusShipping.CANCEL,
-                    reasonCancel: reasonCancel,
-                    refund: true,
-                },
-            });
+            if (isOwnerDo) {
+                // With user cancel is owner order
+                await OrderModel.findByIdAndUpdate(order._id, {
+                    $set: {
+                        statusOrder: EOrder.REQUEST_REFUND,
+                        statusShipping: EStatusShipping.CANCEL,
+                        reasonCancel: reasonCancel,
+                        refund: true,
+                    },
+                });
+            } else {
+                // With user cancel is seller order
+                await OrderModel.findByIdAndUpdate(order._id, {
+                    $set: {
+                        statusOrder: EOrder.CANCEL,
+                        statusShipping: EStatusShipping.CANCEL,
+                        reasonCancel: reasonCancel,
+                        refund: true,
+                    },
+                });
+
+                // Update accounting seller
+                const accountingSeller = await AccountingModel.findOne({
+                    owner: order.seller,
+                }).exec();
+
+                if (!accountingSeller)
+                    throw new ResponseError(422, "Lỗi, không thể cập nhật tài chính.");
+
+                const newBalance = accountingSeller?.accountBalance - order.totalPayment;
+                await AccountingModel.findByIdAndUpdate(
+                    accountingSeller._id,
+                    {
+                        $set: { accountBalance: newBalance },
+                    },
+                    { new: true }
+                );
+            }
+
             return res.json({ message: MSG_ORDER_CANCEL });
         }
 
+        // Case order unpaid
         await OrderModel.findByIdAndUpdate(id, {
             $set: {
                 statusOrder: EOrder.CANCEL,
@@ -243,11 +301,13 @@ export const cancelOrder = async (req: Request, res: Response, next: NextFunctio
 export const acceptOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { orderId } = req.body;
-        const { userId } = decodeToken(req);
 
         const order = await OrderModel.findById(orderId).exec();
 
         if (!order) throw new ResponseError(404, MSG_ORDER_NOT_FOUND);
+
+        if (order.statusOrder === EOrder.CANCEL)
+            throw new ResponseError(400, MSG_ORDER_CAN_NOT_ACCEPT);
 
         // Create notification
         await NotificationModel.create({
@@ -256,34 +316,6 @@ export const acceptOrder = async (req: Request, res: Response, next: NextFunctio
             message: `Đơn hàng ${order._id} đã được duyệt.`,
             action: `${configs.client.user}/account/orders-buy`,
         });
-
-        if (order.statusOrder === EOrder.CANCEL)
-            throw new ResponseError(400, MSG_ORDER_CAN_NOT_ACCEPT);
-
-        // update account for seller
-        if (order.statusPayment === true) {
-            const account = await AccountingModel.find({ owner: userId });
-            const sellerAccount = account[0];
-            if (sellerAccount) {
-                // update
-                await AccountingModel.findByIdAndUpdate(
-                    sellerAccount._id,
-                    {
-                        $set: {
-                            accountBalance:
-                                sellerAccount.accountBalance + order.totalPayment,
-                        },
-                    },
-                    { new: true }
-                );
-            } else {
-                // create
-                await AccountingModel.create({
-                    owner: userId,
-                    accountBalance: order.totalPayment,
-                });
-            }
-        }
 
         await OrderModel.findByIdAndUpdate(
             orderId,
@@ -305,12 +337,34 @@ export const acceptOrder = async (req: Request, res: Response, next: NextFunctio
 export const refundOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { orderId } = req.body;
+        // Only seller perform that
+        const { userId } = decodeToken(req);
 
-        await OrderModel.findByIdAndUpdate(orderId, {
+        const order = await OrderModel.findByIdAndUpdate(orderId, {
             $set: {
+                statusOrder: EOrder.CANCEL,
                 refund: true,
             },
         });
+
+        if (!order)
+            throw new ResponseError(404, "Lỗi, không tìm thấy đơn hàng cần hoàn tiền.");
+
+        // Update accounting for seller
+        const accountingSeller = await AccountingModel.findOne({ owner: userId }).exec();
+        if (accountingSeller) {
+            const newBalance = accountingSeller.accountBalance - order.totalPayment;
+            await AccountingModel.findByIdAndUpdate(
+                accountingSeller._id,
+                {
+                    $set: {
+                        accountBalance: newBalance,
+                    },
+                },
+                { new: true }
+            );
+        }
+
         return res.json({ message: "Hoàn tiền thành công." });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
