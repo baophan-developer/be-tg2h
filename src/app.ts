@@ -5,11 +5,48 @@ import routers from "./routers";
 import ResponseError from "./utils/error-api";
 import HttpStatusCode from "./enums/http-status-code";
 
-const app: Express = express();
+import http from "http";
+import { Server } from "socket.io";
 
 const corsOptions: CorsOptions = {
     origin: [configs.client.user, configs.client.admin],
 };
+
+const app: Express = express();
+const httpServer = http.createServer(app);
+const socketIO = new Server(httpServer, {
+    cors: corsOptions,
+});
+
+let usersOnline: { socketId: string; userId: string }[] = [];
+
+socketIO.on("connection", (socket) => {
+    console.log(`User connected socket.id: ${socket.id}`);
+    // Catch new user online system
+    socket.on("userOnline", (data) => {
+        // Check user online
+        const index = usersOnline.findIndex((user) => user.userId == data.userId);
+        if (index === -1) usersOnline.push(data);
+    });
+
+    // Catch user logout and remove user in array users online
+    socket.on("userLogout", (data) => {
+        usersOnline = usersOnline.filter((user) => user.userId !== data.userId);
+    });
+
+    // Catch notification
+    socket.on("notification", (data) => {
+        // find user receive notification
+        const user = usersOnline.filter((user) => user.userId === data.userReceive)[0];
+        user && socketIO.to(user.socketId).emit("notificationResponse", data);
+    });
+
+    socket.on("disconnect", () => {
+        console.log(`User disconnected socket.id: ${socket.id}`);
+        // Remove user when user offline (disconnect)
+        usersOnline = usersOnline.filter((user) => user.socketId !== socket.id);
+    });
+});
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -32,4 +69,4 @@ app.use((error: ResponseError, req: Request, res: Response, next: NextFunction) 
     });
 });
 
-export default app;
+export default httpServer;

@@ -140,8 +140,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
             message: MSG_LOGIN_SUCCESS,
         });
     } catch (error: ResponseError | any) {
-        const { status, message } = handleError(error);
-        return next(new ResponseError(status, message));
+        return next(new ResponseError(error.status, error.message));
     }
 };
 
@@ -155,8 +154,7 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
         );
         return res.json({ message: MSG_LOGOUT_SUCCESS });
     } catch (error: ResponseError | any) {
-        const { status, message } = handleError(error);
-        return next(new ResponseError(status, message));
+        return next(new ResponseError(error.status, error.message));
     }
 };
 
@@ -198,8 +196,7 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
         }
         throw new ResponseError(500);
     } catch (error: ResponseError | any) {
-        const { status, message } = handleError(error);
-        return next(new ResponseError(status, message));
+        return next(new ResponseError(error.status, error.message));
     }
 };
 
@@ -248,8 +245,7 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
             }
         );
     } catch (error: ResponseError | any) {
-        const { status, message } = handleError(error);
-        return next(new ResponseError(status, message));
+        return next(new ResponseError(error.status, error.message));
     }
 };
 
@@ -294,7 +290,6 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
         );
         return res.json({ message: MSG_RESET_PASSWORD_SUCCESS });
     } catch (error: ResponseError | any) {
-        const { status, message } = handleError(error);
-        return next(new ResponseError(status, message));
+        return next(new ResponseError(error.status, error.message));
     }
 };

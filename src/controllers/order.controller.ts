@@ -23,6 +23,8 @@ import createCodeOrder from "../utils/create-code-order";
 import { calculateReferencePriceForUser } from "../utils/recommendation";
 import UserModel from "../models/User";
 import AccountingModel from "../models/Account";
+import NotificationModel from "../models/Notification";
+import configs from "../configs";
 
 interface IOderFiler {
     filter: {
@@ -157,6 +159,14 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
 
         if (!order) throw new ResponseError(400, MSG_ORDER_CREATE_FAILED);
 
+        // Save message for seller
+        await NotificationModel.create({
+            userReceive: seller,
+            title: `Bạn có một đơn hàng mới.`,
+            message: `Mã đơn hàng là ${order.code}`,
+            action: `${configs.client.user}/account/order-request`,
+        });
+
         // remove cart
         await SessionCartModel.findByIdAndDelete(cartId);
 
@@ -176,10 +186,30 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
 export const cancelOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id, reasonCancel } = req.body;
+        const { userId } = decodeToken(req);
 
         const order = await OrderModel.findById(id);
 
         if (!order) throw new ResponseError(404, MSG_ORDER_NOT_FOUND);
+
+        const isOwnerDo = order.owner.toString() === userId.toString();
+
+        // Save notification
+        if (isOwnerDo) {
+            await NotificationModel.create({
+                userReceive: order.seller,
+                title: "Đơn hàng bị hủy",
+                message: `Đơn hàng ${order.code} đã bị hủy bởi người mua với lý do ${reasonCancel}`,
+                action: `${configs.client.user}/account/order-request`,
+            });
+        } else {
+            await NotificationModel.create({
+                userReceive: order.owner,
+                title: "Đơn hàng bị hủy",
+                message: `Đơn hàng ${order.code} đã bị hủy bởi người bán với lý do ${reasonCancel}`,
+                action: `${configs.client.user}/account/orders-buy`,
+            });
+        }
 
         if (!(order.statusOrder === EOrder.ORDERED))
             throw new ResponseError(400, MSG_ORDER_CAN_NOT_CANCEL);
@@ -218,6 +248,14 @@ export const acceptOrder = async (req: Request, res: Response, next: NextFunctio
         const order = await OrderModel.findById(orderId).exec();
 
         if (!order) throw new ResponseError(404, MSG_ORDER_NOT_FOUND);
+
+        // Create notification
+        await NotificationModel.create({
+            userReceive: order.owner,
+            title: "Đơn hàng của bạn đã được duyệt",
+            message: `Đơn hàng ${order._id} đã được duyệt.`,
+            action: `${configs.client.user}/account/orders-buy`,
+        });
 
         if (order.statusOrder === EOrder.CANCEL)
             throw new ResponseError(400, MSG_ORDER_CAN_NOT_ACCEPT);
@@ -343,6 +381,14 @@ export const changeStatusShipping = async (
                 },
             });
 
+            // Create notification for owner order delivered
+            await NotificationModel.create({
+                userReceive: order.owner,
+                title: "Cập nhật đơn hàng",
+                message: `Đơn hàng ${order.code} đã được giao thành công.`,
+                action: `${configs.client.user}/account/orders-buy`,
+            });
+
             // Add product in bought of owner order
             const findBought = await BoughtModel.find({ owner: order.owner });
 
@@ -351,6 +397,7 @@ export const changeStatusShipping = async (
             /** items of order using for check duplicate product */
             const items = order.items.map((item) => item.product);
 
+            // Block code in bought is add product in bought
             if (bought) {
                 /** newItems using add into array products of bought product */
                 const newItems: Schema.Types.ObjectId[] = [];
@@ -390,6 +437,13 @@ export const changeStatusShipping = async (
                 $set: {
                     statusShipping: shipping,
                 },
+            });
+            // Create notification for update delivery orders
+            await NotificationModel.create({
+                userReceive: order.owner,
+                title: "Cập nhật đơn hàng",
+                message: `Đơn hàng ${order.code}: ${shipping}`,
+                action: `${configs.client.user}/account/orders-buy`,
             });
         }
         return res.json({ message: "Cập nhật trạng thái vận chuyển thành công." });
