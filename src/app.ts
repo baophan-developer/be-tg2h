@@ -27,6 +27,7 @@ socketIO.on("connection", (socket) => {
         // Check user online
         const index = usersOnline.findIndex((user) => user.userId == data.userId);
         if (index === -1) usersOnline.push(data);
+        console.log(usersOnline);
     });
 
     // Catch user logout and remove user in array users online

@@ -52,6 +52,7 @@ export const getOrders = async (req: Request, res: Response, next: NextFunction)
         const orders = await OrderModel.find(filter, null, {
             skip: skip,
             limit: limit,
+            sort: { updatedAt: -1 },
         })
             .populate("seller", "name avatar")
             .populate("owner", "name avatar")
