@@ -18,31 +18,42 @@ export const calculatorRevenue = async (
             ...filter,
         });
 
-        const ordersCancel = orders.filter((item) => item.statusOrder === EOrder.CANCEL);
-
-        const ordersSuccess = orders.filter((item) => item.statusOrder === EOrder.FINISH);
-
+        /* 
+            Calculator for order paid,
+        */
         const ordersPaid = orders.filter((item) => item.statusPayment === true);
+        const paidTotal = ordersPaid.reduce((val, curr) => curr.totalPayment + val, 0);
 
-        const orderDelivering = orders.filter(
-            (item) => item.statusOrder === EOrder.DELIVERING
+        /* 
+            Calculator for await payment,
+        */
+        const ordersAwaitPayment = orders.filter(
+            (item) => item.statusPayment === false && item.statusOrder !== EOrder.CANCEL
         );
-
-        const paid = ordersPaid.reduce((value, curr) => curr.totalPayment + value, 0);
-
-        const ordersAwaitPayment = orders.filter((item) => item.statusPayment === false);
-
-        const awaitPayment = ordersAwaitPayment.reduce(
-            (value, curr) => curr.totalPayment + value,
+        const paidAwait = ordersAwaitPayment.reduce(
+            (val, curr) => curr.totalPayment + val,
             0
         );
 
+        // Calculator number orders success
+        const ordersSuccess = orders.filter(
+            (item) => item.statusOrder === EOrder.FINISH
+        ).length;
+        // Calculator number orders cancel
+        const ordersCancel = orders.filter(
+            (item) => item.statusOrder === EOrder.CANCEL
+        ).length;
+        // Calculator number orders delivery
+        const ordersDelivery = orders.filter(
+            (item) => item.statusOrder === EOrder.DELIVERING
+        ).length;
+
         return res.json({
-            paid: paid,
-            awaitPayment: awaitPayment,
-            numberOrderSuccess: ordersSuccess.length,
-            numberOrderCancel: ordersCancel.length,
-            numberOrderDelivering: orderDelivering.length,
+            paid: paidTotal,
+            awaitPayment: paidAwait,
+            numberOrderSuccess: ordersSuccess,
+            numberOrderCancel: ordersCancel,
+            numberOrderDelivering: ordersDelivery,
         });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
