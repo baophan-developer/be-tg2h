@@ -9,11 +9,17 @@ import {
 } from "../constants/messages";
 import ProductModel from "../models/Product";
 import decodeToken from "../utils/decode-token";
+import NotificationModel from "../models/Notification";
+import UserModel from "../models/User";
 
 export const createComment = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { product, rating, content } = req.body as IComment;
         const { userId } = decodeToken(req);
+
+        const user = await UserModel.findById(userId).exec();
+
+        if (!user) throw new ResponseError(422, "Lỗi, không thể thêm đánh giá.");
 
         const comment = await CommentModel.create({
             user: userId,
@@ -42,6 +48,17 @@ export const createComment = async (req: Request, res: Response, next: NextFunct
                 rating: updateRating,
             },
         }).exec();
+
+        // *Note user id is person comment
+        if (userId.toString() !== productCalculator.owner.toString()) {
+            // Create notification comment
+            await NotificationModel.create({
+                userReceive: productCalculator.owner,
+                title: "Đánh giá sản phẩm",
+                message: `${user.name}: ${content} cho sản phẩm ${productCalculator.name}`,
+                action: `http://localhost:3000/products/${productCalculator._id}`,
+            });
+        }
 
         return res.json({ message: MSG_CREATE_COMMENT_SUCCESS });
     } catch (error: any) {
