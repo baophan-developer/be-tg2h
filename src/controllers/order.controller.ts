@@ -188,7 +188,7 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
         // Save message for seller
         await NotificationModel.create({
             userReceive: seller,
-            title: `Bạn có một đơn hàng mới.`,
+            title: `Đơn hàng mới.`,
             message: `Mã đơn hàng là ${order.code}`,
             action: `${configs.client.user}/account/order-request`,
         });
