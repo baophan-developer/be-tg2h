@@ -314,7 +314,7 @@ export const acceptOrder = async (req: Request, res: Response, next: NextFunctio
         await NotificationModel.create({
             userReceive: order.owner,
             title: "Đơn hàng của bạn đã được duyệt",
-            message: `Đơn hàng ${order._id} đã được duyệt.`,
+            message: `Đơn hàng ${order.code} đã được duyệt.`,
             action: `${configs.client.user}/account/orders-buy`,
         });
 
