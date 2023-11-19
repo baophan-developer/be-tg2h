@@ -82,6 +82,7 @@ export const getComment = async (req: Request, res: Response, next: NextFunction
         const comments = await CommentModel.find(filter, null, {
             skip: skip,
             limit: limit,
+            sort: { createdAt: -1 },
         })
             .populate("user", "name avatar")
             .exec();
