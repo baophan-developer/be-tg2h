@@ -39,7 +39,8 @@ socketIO.on("connection", (socket) => {
     socket.on("notification", (data) => {
         // find user receive notification
         const user = usersOnline.filter((user) => user.userId === data.userReceive)[0];
-        user && socketIO.to(user.socketId).emit("notificationResponse", data);
+        if (user) socketIO.to(user.socketId).emit("notificationResponse", data);
+        else socketIO.emit("notificationResponse", {});
     });
 
     socket.on("disconnect", () => {
