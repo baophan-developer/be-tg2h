@@ -43,6 +43,13 @@ socketIO.on("connection", (socket) => {
         else socketIO.emit("notificationResponse", {});
     });
 
+    // Catch message
+    socket.on("message", (data) => {
+        // find receiver message
+        const user = usersOnline.filter((user) => user.userId === data.receiverId)[0];
+        if (user) socketIO.to(user.socketId).emit("messageResponse", {});
+    });
+
     socket.on("disconnect", () => {
         console.log(`User disconnected socket.id: ${socket.id}`);
         // Remove user when user offline (disconnect)
