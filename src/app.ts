@@ -47,7 +47,11 @@ socketIO.on("connection", (socket) => {
     socket.on("message", (data) => {
         // find receiver message
         const user = usersOnline.filter((user) => user.userId === data.receiverId)[0];
-        if (user) socketIO.to(user.socketId).emit("messageResponse", {});
+        if (user)
+            socketIO.to(user.socketId).emit("notificationResponse", {
+                title: "Tin nhắn mới",
+                message: `${data.userSend}: ${data.content}`,
+            });
     });
 
     socket.on("disconnect", () => {
