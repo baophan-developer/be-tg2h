@@ -51,8 +51,20 @@ socketIO.on("connection", (socket) => {
             socketIO.to(user.socketId).emit("notificationResponse", {
                 title: "Tin nhắn mới",
                 message: `${data.userSend}: ${data.content}`,
+                chatId: data.chatId,
             });
-            socketIO.to(user.socketId).emit("messageResponse", {});
+            socketIO.to(user.socketId).emit("messageResponse", data);
+        }
+    });
+
+    // Catch delete chat
+    socket.on("deleteChat", (data) => {
+        // find receiver message
+        const user = usersOnline.filter((user) => user.userId === data.receiverId)[0];
+        console.log("user: ", user);
+        console.log("data: ", data);
+        if (user) {
+            socketIO.to(user.socketId).emit("deleteChatResponse", {});
         }
     });
 
