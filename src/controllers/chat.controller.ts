@@ -15,7 +15,7 @@ export const createChat = async (req: Request, res: Response, next: NextFunction
             item.members.includes(receiverId)
         );
 
-        if (chatsOfReceiverId.length !== 0) return res.json("Exist");
+        if (chatsOfReceiverId.length !== 0) return res.json({ message: "Chat is exist" });
 
         const result = await ChatModel.create({
             members: [senderId, receiverId],
