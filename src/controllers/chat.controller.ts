@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import ChatModel from "../models/Chat";
 import ResponseError from "../utils/error-api";
+import MessageModel from "../models/Message";
 
 export const createChat = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -52,6 +53,22 @@ export const findChat = async (req: Request, res: Response, next: NextFunction) 
             .exec();
 
         return res.json(chat);
+    } catch (error: any) {
+        return next(new ResponseError(error.status, error.message));
+    }
+};
+
+export const deleteChat = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+
+        // Delete messages in chat
+        await MessageModel.deleteMany({ chatId: id }).exec();
+
+        // Delete chat
+        await ChatModel.findByIdAndDelete(id).exec();
+
+        return res.json({ message: "Xóa tin nhắn thành công." });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
     }
