@@ -6,6 +6,17 @@ export const createChat = async (req: Request, res: Response, next: NextFunction
     try {
         const { senderId, receiverId } = req.body;
 
+        // check duplicate chat
+        const chatsOfSenderId = await ChatModel.find({
+            members: { $in: [senderId] },
+        });
+
+        const chatsOfReceiverId = chatsOfSenderId.filter((item) =>
+            item.members.includes(receiverId)
+        );
+
+        if (chatsOfReceiverId.length !== 0) return res.json("Exist");
+
         const result = await ChatModel.create({
             members: [senderId, receiverId],
         });
