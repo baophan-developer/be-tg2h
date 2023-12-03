@@ -18,6 +18,7 @@ import UserModel from "../models/User";
 import transporter from "../configs/mail.config";
 import { destroyFile } from "../configs/cloudinary.config";
 import getPublicIdFile from "../utils/get-public-id";
+import { IDiscount } from "../models/Discount";
 
 interface IQueryProduct {
     filters: any;
@@ -61,6 +62,7 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
             .populate("os", removeAttributePopulated)
             .populate("category", removeAttributePopulated)
             .populate("brand", removeAttributePopulated)
+            .populate("discount", removeAttributePopulated)
             .exec();
 
         return res.json({
@@ -221,6 +223,69 @@ export const rejectProduct = async (req: Request, res: Response, next: NextFunct
         await ProductModel.findByIdAndDelete(product.id);
 
         return res.json({ message: MSG_REJECT_PRODUCT_SUCCESS });
+    } catch (error: any) {
+        return next(new ResponseError(error.status, error.message));
+    }
+};
+
+export const getProductsRatingHigh = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const products = await ProductModel.find({}, null, {
+            sort: { rating: -1 },
+        })
+            .populate("discount")
+            .exec();
+
+        const result = products.slice(0, 6);
+
+        return res.json({ list: result });
+    } catch (error: any) {
+        return next(new ResponseError(error.status, error.message));
+    }
+};
+
+export const getProductsSoldHigh = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const products = await ProductModel.find({}, null, {
+            sort: { sold: -1 },
+        })
+            .populate("discount")
+            .exec();
+
+        const result = products.slice(0, 6);
+
+        return res.json({ list: result });
+    } catch (error: any) {
+        return next(new ResponseError(error.status, error.message));
+    }
+};
+
+export const getTopSaleHigh = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const products = await ProductModel.find().populate("discount").exec();
+
+        const productsHasDiscount: any = [];
+
+        products.forEach((item: any) => {
+            if (item.discount && Date.parse(item.discount.start) < Date.now())
+                productsHasDiscount.push(item);
+        });
+
+        const result = productsHasDiscount.sort(
+            (a: any, b: any) => b.discount.percent - a.discount.percent
+        );
+
+        const final = result.slice(0, 3);
+
+        return res.json({ list: final });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
     }

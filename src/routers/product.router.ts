@@ -4,6 +4,9 @@ import {
     createProduct,
     getDetailProduct,
     getProducts,
+    getProductsRatingHigh,
+    getProductsSoldHigh,
+    getTopSaleHigh,
     rejectProduct,
     updateProduct,
 } from "../controllers/product.controller";
@@ -18,5 +21,9 @@ productRouters.post("/create", uploadMemories.array("images"), createProduct);
 productRouters.put("/", uploadMemories.array("images"), updateProduct);
 productRouters.put("/approve", verifyAdmin, approveProduct);
 productRouters.put("/reject", verifyAdmin, rejectProduct);
+
+productRouters.post("/rating-high", getProductsRatingHigh);
+productRouters.post("/sold-high", getProductsSoldHigh);
+productRouters.post("/top-sale", getTopSaleHigh);
 
 export default productRouters;
