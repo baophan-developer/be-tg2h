@@ -43,6 +43,31 @@ socketIO.on("connection", (socket) => {
         else socketIO.emit("notificationResponse", {});
     });
 
+    // Catch message
+    socket.on("message", (data) => {
+        // find receiver message
+        const user = usersOnline.filter((user) => user.userId === data.receiverId)[0];
+        if (user) {
+            socketIO.to(user.socketId).emit("notificationResponse", {
+                title: "Tin nhắn mới",
+                message: `${data.userSend}: ${data.content}`,
+                chatId: data.chatId,
+            });
+            socketIO.to(user.socketId).emit("messageResponse", data);
+        }
+    });
+
+    // Catch delete chat
+    socket.on("deleteChat", (data) => {
+        // find receiver message
+        const user = usersOnline.filter((user) => user.userId === data.receiverId)[0];
+        console.log("user: ", user);
+        console.log("data: ", data);
+        if (user) {
+            socketIO.to(user.socketId).emit("deleteChatResponse", {});
+        }
+    });
+
     socket.on("disconnect", () => {
         console.log(`User disconnected socket.id: ${socket.id}`);
         // Remove user when user offline (disconnect)

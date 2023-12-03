@@ -28,6 +28,8 @@ import financeRouters from "./finance.routers";
 import recommendationRouters from "./recommendation.routers";
 import accountingRouters from "./accounting.routers";
 import notificationRouters from "./notification.routers";
+import chatRouters from "./chat.routers";
+import messageRouters from "./message.routers";
 
 const routers = express();
 
@@ -79,5 +81,9 @@ routers.use("/recommendation", verifyToken, recommendationRouters);
 routers.use("/accounting", verifyToken, accountingRouters);
 // Notification
 routers.use("/notification", verifyToken, notificationRouters);
+// Chat
+routers.use("/chat", verifyToken, chatRouters);
+// Messages
+routers.use("/message", verifyToken, messageRouters);
 
 export default routers;
