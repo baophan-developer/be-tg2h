@@ -283,7 +283,7 @@ export const rejectProduct = async (req: Request, res: Response, next: NextFunct
             }
         );
 
-        // await ProductModel.findByIdAndDelete(product.id);
+        await ProductModel.findByIdAndDelete(product.id);
 
         return res.json({ message: MSG_REJECT_PRODUCT_SUCCESS });
     } catch (error: any) {
