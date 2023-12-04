@@ -271,7 +271,7 @@ export const rejectProduct = async (req: Request, res: Response, next: NextFunct
                 subject: "Thông báo duyệt sản phẩm - laptop2hand",
                 html: templateMail(
                     "Sản phẩm của bạn đã bị từ chối",
-                    `Sản phẩm ${product.name} đã bị từ chối bởi ${user?.name}. Bạn có thể thêm sản phẩm khác bằng cách nhấn vào đường dẫn bên dưới.`,
+                    `Sản phẩm ${product.name} đã bị từ chối bởi ${user?.name}. Với lý do: ${reason}. Bạn có thể thêm sản phẩm khác bằng cách nhấn vào đường dẫn bên dưới.`,
                     "Quản lý sản phẩm",
                     url
                 ),
