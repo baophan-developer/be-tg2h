@@ -19,6 +19,9 @@ import transporter from "../configs/mail.config";
 import { destroyFile } from "../configs/cloudinary.config";
 import getPublicIdFile from "../utils/get-public-id";
 import { IDiscount } from "../models/Discount";
+import NotificationModel from "../models/Notification";
+import configs from "../configs";
+import templateMail from "../template/mail";
 
 interface IQueryProduct {
     filters: any;
@@ -180,18 +183,61 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
 export const approveProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.body;
-        await ProductModel.findByIdAndUpdate(
+        const { userId } = decodeToken(req);
+
+        const user = await UserModel.findById(userId).exec();
+
+        const product = await ProductModel.findByIdAndUpdate(
             id,
             { $set: { approve: true } },
             { new: true }
         );
+
+        if (!product) throw new ResponseError(422, "Không thể duyệt sản phẩm.");
+
+        const receiver = await UserModel.findById(product.owner).exec();
+
+        const url = `${configs.client.user}/account/products/${product._id}`;
+
+        // create notification
+        await NotificationModel.create({
+            userReceive: receiver?._id,
+            title: "Sản phẩm đã được duyệt",
+            message: `Sản phẩm ${product.name} đã được duyệt bởi ${user?.name}`,
+            action: url,
+        });
+
+        transporter.sendMail(
+            {
+                to: receiver?.email,
+                subject: "Thông báo duyệt sản phẩm - laptop2hand",
+                html: templateMail(
+                    "Sản phẩm của bạn đã được duyệt.",
+                    `Sản phẩm ${product.name} đã được duyệt bởi ${user?.name}, giờ đây sản phẩm của bạn đã có thể đưa lên kệ. Nhấn vào đường dẫn sau để có thể quản lý sản phẩm của bạn`,
+                    "Quản lý sản phẩm",
+                    url
+                ),
+            },
+            function (err) {
+                if (err) return next(new ResponseError(500));
+                transporter.close();
+                return res.json({ message: MSG_APPROVE_PRODUCT_SUCCESS });
+            }
+        );
+
         return res.json({ message: MSG_APPROVE_PRODUCT_SUCCESS });
-    } catch (error) {}
+    } catch (error: any) {
+        return next(new ResponseError(error.status, error.message));
+    }
 };
 
 export const rejectProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id, reason } = req.body;
+        const { userId } = decodeToken(req);
+
+        const user = await UserModel.findById(userId).exec();
+        if (!user) throw new ResponseError(404, MSG_ERROR_ACCOUNT_NOT_EXISTED);
 
         const product = await ProductModel.findById(id);
 
@@ -204,23 +250,40 @@ export const rejectProduct = async (req: Request, res: Response, next: NextFunct
             await destroyFile(publicId, "products");
         });
 
-        const user = await UserModel.findById(product.owner);
+        // create notification
+        const receiver = await UserModel.findById(product.owner).exec();
 
-        if (!user) throw new ResponseError(404, MSG_ERROR_ACCOUNT_NOT_EXISTED);
+        if (!receiver) throw new ResponseError(404, MSG_ERROR_ACCOUNT_NOT_EXISTED);
+
+        const url = `${configs.client.user}/account/products`;
+
+        // create notification
+        await NotificationModel.create({
+            userReceive: receiver?._id,
+            title: "Sản phẩm của bạn",
+            message: `Sản phẩm ${product.name} đã bị từ chối bởi ${user?.name}`,
+            action: url,
+        });
 
         transporter.sendMail(
             {
-                to: user.email,
-                subject: "Từ chối sản phẩm!",
-                text: reason,
+                to: receiver?.email,
+                subject: "Thông báo duyệt sản phẩm - laptop2hand",
+                html: templateMail(
+                    "Sản phẩm của bạn đã bị từ chối",
+                    `Sản phẩm ${product.name} đã bị từ chối bởi ${user?.name}. Bạn có thể thêm sản phẩm khác bằng cách nhấn vào đường dẫn bên dưới.`,
+                    "Quản lý sản phẩm",
+                    url
+                ),
             },
-            async function (err) {
+            function (err) {
                 if (err) return next(new ResponseError(500));
                 transporter.close();
+                return res.json({ message: MSG_REJECT_PRODUCT_SUCCESS });
             }
         );
 
-        await ProductModel.findByIdAndDelete(product.id);
+        // await ProductModel.findByIdAndDelete(product.id);
 
         return res.json({ message: MSG_REJECT_PRODUCT_SUCCESS });
     } catch (error: any) {
