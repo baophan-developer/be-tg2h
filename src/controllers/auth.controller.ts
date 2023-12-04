@@ -29,7 +29,6 @@ import {
     MAX_LENGTH_PASSWORD_ACCEPT,
     MIN_LENGTH_PASSWORD_ACCEPT,
 } from "../constants/user";
-import BoughtModel from "../models/Bought";
 import AccountModel from "../models/Account";
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
@@ -55,12 +54,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             avatar: configs.defaultAvatar,
         });
 
-        // create bought and create account
-        await BoughtModel.create({
-            owner: user._id,
-            products: [],
-        });
-
+        // create account
         await AccountModel.create({
             owner: user._id,
             accountBalance: 0,

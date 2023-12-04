@@ -23,7 +23,6 @@ import shippingRouters from "./shipping.router";
 import paymentRouters from "./payment.routers";
 import orderRouters from "./order.router";
 import commentRouters from "./comment.router";
-import boughtRouters from "./bought.routers";
 import financeRouters from "./finance.routers";
 import recommendationRouters from "./recommendation.routers";
 import accountingRouters from "./accounting.routers";
@@ -71,8 +70,6 @@ routers.use("/payment", verifyToken, paymentRouters);
 routers.use("/order", verifyToken, orderRouters);
 // Comment
 routers.use("/comment", verifyToken, commentRouters);
-// Bought
-routers.use("/bought", verifyToken, boughtRouters);
 // Management finance
 routers.use("/finance", verifyToken, financeRouters);
 // Recommendation

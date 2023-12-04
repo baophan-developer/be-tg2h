@@ -18,7 +18,6 @@ import DiscountModel, { IDiscount } from "../models/Discount";
 import { Schema } from "mongoose";
 import { EOrder, EStatusShipping } from "../enums/order.enum";
 import SessionCartModel from "../models/SessionCart";
-import BoughtModel, { IBought } from "../models/Bought";
 import createCodeOrder from "../utils/create-code-order";
 import { calculateReferencePriceForUser } from "../utils/recommendation";
 import UserModel from "../models/User";
@@ -373,18 +372,10 @@ export const refundOrder = async (req: Request, res: Response, next: NextFunctio
 };
 
 /** Temporary use */
-const saveReferencePriceForUser = async (boughtId: Schema.Types.ObjectId) => {
-    const newBought = await BoughtModel.findById(boughtId).populate("products");
+const saveReferencePriceForUser = async (userId: Schema.Types.ObjectId) => {
+    const user = await UserModel.findById(userId).populate("bought");
 
-    if (!newBought)
-        throw new ResponseError(
-            404,
-            "Lỗi, không tìm thấy danh sách sản phẩm đã mua trước đó"
-        );
-
-    const products = newBought.products;
-    const referencePrice: any = calculateReferencePriceForUser(products);
-    const userId = newBought.owner;
+    const referencePrice: any = calculateReferencePriceForUser(user?.bought);
     await UserModel.findByIdAndUpdate(
         userId,
         {
@@ -444,43 +435,35 @@ export const changeStatusShipping = async (
                 action: `${configs.client.user}/account/orders-buy`,
             });
 
-            // Add product in bought of owner order
-            const findBought = await BoughtModel.find({ owner: order.owner });
-
-            const bought = findBought[0];
-
             /** items of order using for check duplicate product */
             const items = order.items.map((item) => item.product);
 
-            // Block code in bought is add product in bought
-            if (bought) {
-                /** newItems using add into array products of bought product */
-                const newItems: Schema.Types.ObjectId[] = [];
+            // update bought
+            const user = await UserModel.findById(order.owner).exec();
 
-                items.forEach((item) => {
-                    const checkDuplicateProduct = bought.products.findIndex(
-                        (proId) => proId.toString() === item.toString()
-                    );
-                    if (checkDuplicateProduct === -1) newItems.push(item);
-                });
+            if (!user) throw new ResponseError(404, "Không thể cập nhật sản phẩm đã mua");
 
-                await BoughtModel.findByIdAndUpdate(
-                    bought._id,
-                    {
-                        $push: { products: { $each: newItems } },
-                    },
-                    { new: true }
+            const bought = user.bought;
+
+            const newItems: Schema.Types.ObjectId[] = [...bought];
+
+            items.forEach((item) => {
+                const checkDuplicateProduct = bought.findIndex(
+                    (prod) => prod.toString() === item.toString()
                 );
-                // calculate reference price product to user
-                await saveReferencePriceForUser(bought._id);
-            } else {
-                const bought = await BoughtModel.create({
-                    owner: order.owner,
-                    products: items,
-                });
-                // calculate reference price product to user
-                await saveReferencePriceForUser(bought._id);
-            }
+                if (checkDuplicateProduct === -1) newItems.push(item);
+            });
+
+            await UserModel.findByIdAndUpdate(
+                order.owner,
+                {
+                    $set: { bought: newItems },
+                },
+                { new: true }
+            );
+
+            await saveReferencePriceForUser(order.owner);
+
             // Increase sold product in items
             order.items.forEach(async (item: any) => {
                 await ProductModel.findByIdAndUpdate(item.product, {
@@ -503,6 +486,7 @@ export const changeStatusShipping = async (
         }
         return res.json({ message: "Cập nhật trạng thái vận chuyển thành công." });
     } catch (error: any) {
+        console.log(error);
         return next(new ResponseError(error.status, error.message));
     }
 };

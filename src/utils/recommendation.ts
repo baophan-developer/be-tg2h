@@ -1,16 +1,24 @@
 export const calculateReferencePriceForUser = (products: any) => {
+    console.log(products);
+
+    if (products.length < 2) return products[0].price;
+
     let min = products[0].price,
         max = products[0].price;
 
     for (let i = 1; i < products.length; i++) {
         if (products[i].price < products[i - 1].price) {
             min = products[i]?.price;
+        } else {
+            min = products[i - 1]?.price;
         }
     }
 
     for (let i = 1; i < products.length; i++) {
         if (products[i].price < products[i - 1].price) {
             max = products[i - 1]?.price;
+        } else {
+            max = products[i]?.price;
         }
     }
 
