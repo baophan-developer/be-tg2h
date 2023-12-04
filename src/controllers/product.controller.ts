@@ -189,7 +189,7 @@ export const approveProduct = async (req: Request, res: Response, next: NextFunc
 
         const product = await ProductModel.findByIdAndUpdate(
             id,
-            { $set: { approve: true } },
+            { $set: { approve: true, status: true } },
             { new: true }
         );
 
@@ -317,7 +317,7 @@ export const getProductsSoldHigh = async (
     next: NextFunction
 ) => {
     try {
-        const products = await ProductModel.find({}, null, {
+        const products = await ProductModel.find({ status: true, approve: true }, null, {
             sort: { sold: -1 },
         })
             .populate("discount")
@@ -333,7 +333,9 @@ export const getProductsSoldHigh = async (
 
 export const getTopSaleHigh = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const products = await ProductModel.find().populate("discount").exec();
+        const products = await ProductModel.find({ status: true, approve: true })
+            .populate("discount")
+            .exec();
 
         const productsHasDiscount: any = [];
 
@@ -346,7 +348,7 @@ export const getTopSaleHigh = async (req: Request, res: Response, next: NextFunc
             (a: any, b: any) => b.discount.percent - a.discount.percent
         );
 
-        const final = result.slice(0, 3);
+        const final = result.slice(0, 5);
 
         return res.json({ list: final });
     } catch (error: any) {
