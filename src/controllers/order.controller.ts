@@ -222,7 +222,6 @@ export const cancelOrder = async (req: Request, res: Response, next: NextFunctio
 
         const isOwnerDo = order.owner.toString() === userId.toString();
 
-        // Case order paid
         if (isOwnerDo) {
             // Create notification
             await NotificationModel.create({
@@ -240,46 +239,15 @@ export const cancelOrder = async (req: Request, res: Response, next: NextFunctio
             });
         }
 
+        // Case order paid
         if (order.statusPayment) {
-            if (isOwnerDo) {
-                // With user cancel is owner order
-                await OrderModel.findByIdAndUpdate(order._id, {
-                    $set: {
-                        statusOrder: EOrder.REQUEST_REFUND,
-                        statusShipping: EStatusShipping.CANCEL,
-                        reasonCancel: reasonCancel,
-                        refund: true,
-                    },
-                });
-            } else {
-                // With user cancel is seller order
-                await OrderModel.findByIdAndUpdate(order._id, {
-                    $set: {
-                        statusOrder: EOrder.CANCEL,
-                        statusShipping: EStatusShipping.CANCEL,
-                        reasonCancel: reasonCancel,
-                        refund: true,
-                    },
-                });
-
-                // Update accounting seller
-                const accountingSeller = await AccountingModel.findOne({
-                    owner: order.seller,
-                }).exec();
-
-                if (!accountingSeller)
-                    throw new ResponseError(422, "Lỗi, không thể cập nhật tài chính.");
-
-                const newBalance = accountingSeller?.accountBalance - order.totalPayment;
-                await AccountingModel.findByIdAndUpdate(
-                    accountingSeller._id,
-                    {
-                        $set: { accountBalance: newBalance },
-                    },
-                    { new: true }
-                );
-            }
-
+            await OrderModel.findByIdAndUpdate(order._id, {
+                $set: {
+                    statusOrder: EOrder.CANCEL,
+                    statusShipping: EStatusShipping.CANCEL,
+                    reasonCancel: reasonCancel,
+                },
+            });
             return res.json({ message: MSG_ORDER_CANCEL });
         }
 
@@ -334,38 +302,136 @@ export const acceptOrder = async (req: Request, res: Response, next: NextFunctio
     }
 };
 
-export const refundOrder = async (req: Request, res: Response, next: NextFunction) => {
+// User confirm received order
+export const confirmReceivedOrder = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const { orderId } = req.body;
-        // Only seller perform that
-        const { userId } = decodeToken(req);
 
-        const order = await OrderModel.findByIdAndUpdate(orderId, {
-            $set: {
-                statusOrder: EOrder.CANCEL,
-                refund: true,
+        const order: any = await OrderModel.findByIdAndUpdate(
+            orderId,
+            {
+                $set: {
+                    received: true,
+                },
             },
-        });
+            { new: true }
+        )
+            .populate("payment")
+            .exec();
 
-        if (!order)
-            throw new ResponseError(404, "Lỗi, không tìm thấy đơn hàng cần hoàn tiền.");
+        if (!order) throw new ResponseError(404, "Lỗi, không tìm thấy đơn hàng.");
 
-        // Update accounting for seller
-        const accountingSeller = await AccountingModel.findOne({ owner: userId }).exec();
-        if (accountingSeller) {
-            const newBalance = accountingSeller.accountBalance - order.totalPayment;
+        if (order.payment.name === "VNPAY") {
+            // update accounting for seller
+            const account = await AccountingModel.findOne({ owner: order.seller }).exec();
+            const newBalance = account?.accountBalance + order.totalPayment;
+
             await AccountingModel.findByIdAndUpdate(
-                accountingSeller._id,
+                account?._id,
                 {
-                    $set: {
-                        accountBalance: newBalance,
-                    },
+                    $set: { accountBalance: newBalance },
                 },
                 { new: true }
             );
         }
 
-        return res.json({ message: "Hoàn tiền thành công." });
+        // Create notification
+        await NotificationModel.create({
+            userReceive: order.seller,
+            title: "Đơn hàng của bạn đã được người dùng xác nhận",
+            message: `Đơn hàng ${order.code} đã được người dùng xác nhận đã nhận hàng.`,
+            action: "http://localhost:3000/account/order-request",
+        });
+
+        return res.json({ message: "Đã xác nhận, nhận hàng thành công." });
+    } catch (error: any) {
+        return next(new ResponseError(error.status, error.message));
+    }
+};
+
+// Buyer using this api
+export const refundOrder = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { orderId } = req.body;
+
+        const order: any = await OrderModel.findByIdAndUpdate(orderId, {
+            $set: {
+                statusOrder: EOrder.REQUEST_REFUND,
+            },
+        })
+            .populate("payment")
+            .exec();
+
+        if (!order)
+            throw new ResponseError(404, "Lỗi, không tìm thấy đơn hàng cần hoàn trả.");
+
+        if (order.statusOrder !== EOrder.FINISH || order.refund || order.received)
+            throw new ResponseError(422, "Không thể yêu cầu hoàn trả.");
+
+        // Create notification
+        await NotificationModel.create({
+            userReceive: order.seller,
+            title: "Yêu cầu trả hàng từ người dùng",
+            message: `Đơn hàng ${order.code} được yêu cầu hoàn tiền và hoàn trả hàng.`,
+            action: "http://localhost:3000/account/order-request",
+        });
+
+        return res.json({ message: "Đã yêu cầu hoàn trả" });
+    } catch (error: any) {
+        return next(new ResponseError(error.status, error.message));
+    }
+};
+
+// Seller confirm order
+export const confirmRefundOrder = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { orderId } = req.body;
+        const { userId } = decodeToken(req);
+
+        const order = await OrderModel.findByIdAndUpdate(
+            orderId,
+            {
+                $set: {
+                    refund: true,
+                },
+            },
+            { new: true }
+        );
+
+        if (!order)
+            throw new ResponseError(404, "Lỗi, không tìm thấy đơn hàng cần hoàn tiền.");
+
+        // update account for seller
+        const account = await AccountingModel.findOne({ owner: userId }).exec();
+
+        if (account) {
+            const newBalance = account.accountBalance - order.totalPayment;
+            await AccountingModel.findByIdAndUpdate(
+                account._id,
+                {
+                    $set: { accountBalance: newBalance },
+                },
+                { new: true }
+            );
+        }
+
+        // Create notification
+        await NotificationModel.create({
+            userReceive: order.owner,
+            title: "Đơn hàng đã được xác nhận yêu cầu hoàn trả",
+            message: `Đơn hàng ${order.code} đã được người bán xác nhận yêu cầu hoàn trả.`,
+            action: "http://localhost:3000/account/order-buy",
+        });
+
+        return res.json({ message: "Đã xác nhận yêu cầu hoàn trả." });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
     }
