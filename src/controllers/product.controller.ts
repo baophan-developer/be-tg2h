@@ -336,7 +336,7 @@ export const getTopSaleHigh = async (req: Request, res: Response, next: NextFunc
         const productsHasDiscount: any = [];
 
         products.forEach((item: any) => {
-            if (item.discount && Date.parse(item.discount.start) < Date.now())
+            if (item.discount && Date.parse(item.discount.start) <= Date.now())
                 productsHasDiscount.push(item);
         });
 
