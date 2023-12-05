@@ -98,7 +98,7 @@ export const removeDiscount = async (req: Request, res: Response, next: NextFunc
 
 export const useDiscount = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { code } = req.body as { code: string };
+        const { code, productId } = req.body as { code: string; productId: string };
 
         const discount = await DiscountModel.findOne({ code: code }).exec();
 
@@ -115,7 +115,8 @@ export const useDiscount = async (req: Request, res: Response, next: NextFunctio
         if (discount.start.getTime() > date.getTime())
             throw new ResponseError(404, MSG_DISCOUNT_NOT_USE);
 
-        if (!discount.status) throw new ResponseError(404, MSG_DISCOUNT_NOT_USE);
+        if (!discount.status || discount.productId.toString() !== productId)
+            throw new ResponseError(404, MSG_DISCOUNT_NOT_USE);
 
         return res.json({ message: MSG_DISCOUNT_APPLY_SUCCESS });
     } catch (error: any) {

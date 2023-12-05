@@ -224,8 +224,6 @@ export const approveProduct = async (req: Request, res: Response, next: NextFunc
                 return res.json({ message: MSG_APPROVE_PRODUCT_SUCCESS });
             }
         );
-
-        return res.json({ message: MSG_APPROVE_PRODUCT_SUCCESS });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
     }
@@ -265,6 +263,8 @@ export const rejectProduct = async (req: Request, res: Response, next: NextFunct
             action: url,
         });
 
+        await ProductModel.findByIdAndDelete(product.id);
+
         transporter.sendMail(
             {
                 to: receiver?.email,
@@ -282,10 +282,6 @@ export const rejectProduct = async (req: Request, res: Response, next: NextFunct
                 return res.json({ message: MSG_REJECT_PRODUCT_SUCCESS });
             }
         );
-
-        await ProductModel.findByIdAndDelete(product.id);
-
-        return res.json({ message: MSG_REJECT_PRODUCT_SUCCESS });
     } catch (error: any) {
         return next(new ResponseError(error.status, error.message));
     }
