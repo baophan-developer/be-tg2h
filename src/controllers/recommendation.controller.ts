@@ -40,6 +40,7 @@ export const recommendation = async (req: Request, res: Response, next: NextFunc
             .populate("os", removeAttributePopulated)
             .populate("category", removeAttributePopulated)
             .populate("brand", removeAttributePopulated)
+            .populate("discount", removeAttributePopulated)
             .exec();
 
         const user = await UserModel.findById(userId);

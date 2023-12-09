@@ -39,6 +39,8 @@ export interface IOrder {
     /** status is status order wait seller accept order */
     status: boolean;
     refund: boolean;
+    //  Confirm user received
+    received: boolean;
 }
 
 const schemaOrder = new Schema<IOrder>(
@@ -113,7 +115,13 @@ const schemaOrder = new Schema<IOrder>(
         },
         statusOrder: {
             type: String,
-            enum: [EOrder.CANCEL, EOrder.FINISH, EOrder.ORDERED, EOrder.DELIVERING],
+            enum: [
+                EOrder.CANCEL,
+                EOrder.FINISH,
+                EOrder.ORDERED,
+                EOrder.DELIVERING,
+                EOrder.REQUEST_REFUND,
+            ],
             default: EOrder.ORDERED,
         },
         dayReceiveOrder: {
@@ -125,6 +133,11 @@ const schemaOrder = new Schema<IOrder>(
         },
         refund: {
             type: Boolean,
+            default: false,
+        },
+        received: {
+            type: Boolean,
+            default: false,
         },
     },
     { timestamps: true }

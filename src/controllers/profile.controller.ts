@@ -33,6 +33,7 @@ export const getProfile = async (req: Request, res: Response, next: NextFunction
         )
             .populate("address", "-__v")
             .populate("favorites")
+            .populate("bought")
             .exec();
 
         if (!user)

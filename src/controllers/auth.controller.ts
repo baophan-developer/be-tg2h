@@ -29,8 +29,8 @@ import {
     MAX_LENGTH_PASSWORD_ACCEPT,
     MIN_LENGTH_PASSWORD_ACCEPT,
 } from "../constants/user";
-import BoughtModel from "../models/Bought";
 import AccountModel from "../models/Account";
+import templateMail from "../template/mail";
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -55,12 +55,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             avatar: configs.defaultAvatar,
         });
 
-        // create bought and create account
-        await BoughtModel.create({
-            owner: user._id,
-            products: [],
-        });
-
+        // create account
         await AccountModel.create({
             owner: user._id,
             accountBalance: 0,
@@ -232,11 +227,18 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
             }
         );
 
+        const url = `${configs.client.user}/reset-password?reset=${tokenResetPassword}`;
+
         transporter.sendMail(
             {
                 to: email,
-                subject: "Mật khẩu mới - thegioi2hand",
-                text: `Đường dẫn khôi phục mật khẩu: ${configs.client.user}/reset-password?reset=${tokenResetPassword}`,
+                subject: "Đặt lại mật khẩu - laptop2hand",
+                html: templateMail(
+                    "Bạn có một yêu cầu đặt lại mật khẩu.",
+                    "Nhấn vào đường dẫn bên dưới, để khôi phục lại mật khẩu.",
+                    "Đặt lại mật khẩu",
+                    url
+                ),
             },
             function (err) {
                 if (err) return next(new ResponseError(500));

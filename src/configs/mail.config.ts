@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 const mailerOptions = (
     to: string,
     subject: string,
-    text: string,
+    text?: string,
     html?: string
 ): MailOptions => {
     return {

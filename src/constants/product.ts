@@ -5,7 +5,7 @@ const PRODUCT = {
     },
     DESC: {
         MIN: 0,
-        MAX: 1000,
+        MAX: 999999999,
     },
     PRICE: {
         MIN: 1000,

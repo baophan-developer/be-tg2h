@@ -84,7 +84,7 @@ export const getComment = async (req: Request, res: Response, next: NextFunction
             limit: limit,
             sort: { createdAt: -1 },
         })
-            .populate("user", "name avatar")
+            .populate("user", "name avatar bought")
             .exec();
 
         return res.json({
